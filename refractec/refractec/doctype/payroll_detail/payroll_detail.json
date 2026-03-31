@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "worker",
+  "worker_name",
+  "worker_type",
+  "daily_wage_rate",
+  "overtime_hourly_rate",
+  "total_present_days",
+  "total_overtime_hours",
+  "gross_wage",
+  "overtime_amount",
+  "gross_pay",
+  "advance_deduction",
+  "other_deductions",
+  "net_pay"
+ ],
+ "fields": [
+  {
+   "fieldname": "worker",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Worker",
+   "options": "Worker",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "worker_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Worker Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "worker_type",
+   "fieldtype": "Data",
+   "label": "Worker Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "daily_wage_rate",
+   "fieldtype": "Currency",
+   "label": "Daily Wage Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overtime_hourly_rate",
+   "fieldtype": "Currency",
+   "label": "OT Hourly Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_present_days",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Days Worked",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_overtime_hours",
+   "fieldtype": "Float",
+   "label": "OT Hours",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gross_wage",
+   "fieldtype": "Currency",
+   "label": "Gross Wage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overtime_amount",
+   "fieldtype": "Currency",
+   "label": "OT Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gross_pay",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Gross Pay",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "advance_deduction",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Advance Deduction",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "other_deductions",
+   "fieldtype": "Currency",
+   "label": "Other Deductions"
+  },
+  {
+   "fieldname": "net_pay",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Net Pay",
+   "read_only": 1,
+   "bold": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Payroll Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC"
+}

@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "expense_type",
+  "min_amount",
+  "max_amount",
+  "requires_bill"
+ ],
+ "fields": [
+  {
+   "fieldname": "expense_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Expense Type",
+   "options": "Expense Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "min_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Min Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "max_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Max Amount",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "requires_bill",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Requires Bill"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Expense Range Rule",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC"
+}

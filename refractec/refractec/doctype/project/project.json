@@ -1,0 +1,311 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "project_name",
+  "status",
+  "configuration_profile",
+  "column_break_1",
+  "site_address",
+  "city",
+  "state",
+  "section_break_dates",
+  "start_date",
+  "expected_end_date",
+  "column_break_dates",
+  "actual_end_date",
+  "section_break_settings",
+  "max_overtime_hours_per_day",
+  "attendance_cutoff_hour",
+  "column_break_settings",
+  "expense_cutoff_days",
+  "advance_monthly_limit_per_worker",
+  "section_break_budget",
+  "project_budget",
+  "total_labor_cost",
+  "total_expense_cost",
+  "column_break_budget",
+  "total_advance_given",
+  "total_advance_recovered",
+  "total_cost",
+  "budget_variance",
+  "budget_utilization_pct",
+  "section_break_budget_items",
+  "budget_items",
+  "section_break_workers",
+  "worker_assignments"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "PROJ-.YYYY.-.#####",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project Name",
+   "reqd": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nIn Progress\nCompleted\nCancelled"
+  },
+  {
+   "fieldname": "configuration_profile",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Configuration Profile",
+   "options": "Project Configuration Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "site_address",
+   "fieldtype": "Small Text",
+   "label": "Site Address"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "section_break_dates",
+   "fieldtype": "Section Break",
+   "label": "Project Timeline"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expected_end_date",
+   "fieldtype": "Date",
+   "label": "Expected End Date"
+  },
+  {
+   "fieldname": "column_break_dates",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_end_date",
+   "fieldtype": "Date",
+   "label": "Actual End Date"
+  },
+  {
+   "fieldname": "section_break_settings",
+   "fieldtype": "Section Break",
+   "label": "Project Settings"
+  },
+  {
+   "default": "4",
+   "fieldname": "max_overtime_hours_per_day",
+   "fieldtype": "Float",
+   "label": "Max Overtime Hours Per Day"
+  },
+  {
+   "default": "20",
+   "fieldname": "attendance_cutoff_hour",
+   "fieldtype": "Int",
+   "label": "Attendance Cutoff Hour (24h)",
+   "description": "Hour of day by which attendance must be entered"
+  },
+  {
+   "fieldname": "column_break_settings",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "3",
+   "fieldname": "expense_cutoff_days",
+   "fieldtype": "Int",
+   "label": "Expense Cutoff Days",
+   "description": "Max days after expense date to submit without flagging"
+  },
+  {
+   "fieldname": "advance_monthly_limit_per_worker",
+   "fieldtype": "Currency",
+   "label": "Advance Monthly Limit Per Worker",
+   "description": "Leave blank for no limit"
+  },
+  {
+   "fieldname": "section_break_budget",
+   "fieldtype": "Section Break",
+   "label": "Budget & Cost Summary"
+  },
+  {
+   "fieldname": "project_budget",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Project Budget"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_labor_cost",
+   "fieldtype": "Currency",
+   "label": "Total Labor Cost",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_expense_cost",
+   "fieldtype": "Currency",
+   "label": "Total Expense Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_budget",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_advance_given",
+   "fieldtype": "Currency",
+   "label": "Total Advance Given",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_advance_recovered",
+   "fieldtype": "Currency",
+   "label": "Total Advance Recovered",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "budget_variance",
+   "fieldtype": "Currency",
+   "label": "Budget Variance",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "budget_utilization_pct",
+   "fieldtype": "Percent",
+   "label": "Budget Utilization %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_budget_items",
+   "fieldtype": "Section Break",
+   "label": "Budget Line Items",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "budget_items",
+   "fieldtype": "Table",
+   "label": "Budget Items",
+   "options": "Project Budget Item"
+  },
+  {
+   "fieldname": "section_break_workers",
+   "fieldtype": "Section Break",
+   "label": "Worker Assignments"
+  },
+  {
+   "fieldname": "worker_assignments",
+   "fieldtype": "Table",
+   "label": "Worker Assignments",
+   "options": "Project Worker Assignment"
+  }
+ ],
+ "links": [
+  {
+   "group": "Transactions",
+   "link_doctype": "Daily Attendance",
+   "link_fieldname": "project"
+  },
+  {
+   "group": "Transactions",
+   "link_doctype": "Worker Advance",
+   "link_fieldname": "project"
+  },
+  {
+   "group": "Transactions",
+   "link_doctype": "Expense Entry",
+   "link_fieldname": "project"
+  },
+  {
+   "group": "Transactions",
+   "link_doctype": "Payroll Entry",
+   "link_fieldname": "project"
+  }
+ ],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Project",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Supervisor",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Accountant",
+   "share": 1
+  }
+ ],
+ "quick_entry": 0,
+ "search_fields": "project_name,status,city",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "title_field": "project_name",
+ "track_changes": 1
+}

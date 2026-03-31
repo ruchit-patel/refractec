@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "default_configuration_profile",
+  "column_break_1",
+  "enable_budget_alerts",
+  "budget_warning_threshold",
+  "budget_critical_threshold",
+  "section_break_attendance",
+  "enable_attendance_reminders",
+  "column_break_attendance",
+  "payroll_auto_generate_day",
+  "section_break_recipients",
+  "notification_email_recipients"
+ ],
+ "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "default_configuration_profile",
+   "fieldtype": "Link",
+   "label": "Default Configuration Profile",
+   "options": "Project Configuration Profile"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_budget_alerts",
+   "fieldtype": "Check",
+   "label": "Enable Budget Alerts"
+  },
+  {
+   "default": "80",
+   "fieldname": "budget_warning_threshold",
+   "fieldtype": "Percent",
+   "label": "Budget Warning Threshold %"
+  },
+  {
+   "default": "95",
+   "fieldname": "budget_critical_threshold",
+   "fieldtype": "Percent",
+   "label": "Budget Critical Threshold %"
+  },
+  {
+   "fieldname": "section_break_attendance",
+   "fieldtype": "Section Break",
+   "label": "Attendance & Payroll"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_attendance_reminders",
+   "fieldtype": "Check",
+   "label": "Enable Attendance Reminders"
+  },
+  {
+   "fieldname": "column_break_attendance",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "payroll_auto_generate_day",
+   "fieldtype": "Int",
+   "label": "Payroll Reminder Day of Month",
+   "description": "Day of month to send payroll generation reminder"
+  },
+  {
+   "fieldname": "section_break_recipients",
+   "fieldtype": "Section Break",
+   "label": "Notification Recipients"
+  },
+  {
+   "fieldname": "notification_email_recipients",
+   "fieldtype": "Table",
+   "label": "Notification Email Recipients",
+   "options": "Notification Recipient"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Refractec Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Refractec Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Refractec Accountant"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "track_changes": 1
+}

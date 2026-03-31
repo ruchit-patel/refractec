@@ -1,0 +1,54 @@
+{
+ "actions": [],
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "budget_head",
+  "allocated_amount",
+  "spent_amount",
+  "remaining_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "budget_head",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Budget Head",
+   "reqd": 1
+  },
+  {
+   "fieldname": "allocated_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Allocated Amount",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "spent_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Spent Amount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "remaining_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Remaining Amount",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Project Budget Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC"
+}

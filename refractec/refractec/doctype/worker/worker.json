@@ -1,0 +1,249 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "worker_name",
+  "worker_type",
+  "status",
+  "column_break_1",
+  "user_id",
+  "mobile_no",
+  "emergency_contact",
+  "date_of_joining",
+  "date_of_leaving",
+  "section_break_wage",
+  "daily_wage_rate",
+  "overtime_hourly_rate",
+  "column_break_wage",
+  "current_project",
+  "section_break_bank",
+  "bank_name",
+  "bank_account_no",
+  "column_break_bank",
+  "ifsc_code",
+  "section_break_id",
+  "id_proof_type",
+  "id_proof_number",
+  "column_break_id",
+  "id_proof_attachment",
+  "photo",
+  "section_break_address",
+  "address"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "WRK-.YYYY.-.#####",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "worker_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Worker Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "worker_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Worker Type",
+   "options": "Worker\nSupervisor",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Active\nInactive\nLeft",
+   "default": "Active"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Link",
+   "label": "User ID",
+   "options": "User",
+   "unique": 1,
+   "description": "Link to Frappe User account (required for Supervisors to use mobile app)"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "emergency_contact",
+   "fieldtype": "Data",
+   "label": "Emergency Contact",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "date_of_joining",
+   "fieldtype": "Date",
+   "label": "Date of Joining",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date_of_leaving",
+   "fieldtype": "Date",
+   "label": "Date of Leaving"
+  },
+  {
+   "fieldname": "section_break_wage",
+   "fieldtype": "Section Break",
+   "label": "Wage Details"
+  },
+  {
+   "fieldname": "daily_wage_rate",
+   "fieldtype": "Currency",
+   "label": "Daily Wage Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "overtime_hourly_rate",
+   "fieldtype": "Currency",
+   "label": "Overtime Hourly Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wage",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_project",
+   "fieldtype": "Link",
+   "label": "Current Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "section_break_bank",
+   "fieldtype": "Section Break",
+   "label": "Bank Details",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name"
+  },
+  {
+   "fieldname": "bank_account_no",
+   "fieldtype": "Data",
+   "label": "Bank Account No"
+  },
+  {
+   "fieldname": "column_break_bank",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ifsc_code",
+   "fieldtype": "Data",
+   "label": "IFSC Code"
+  },
+  {
+   "fieldname": "section_break_id",
+   "fieldtype": "Section Break",
+   "label": "ID Proof",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "id_proof_type",
+   "fieldtype": "Select",
+   "label": "ID Proof Type",
+   "options": "\nAadhaar\nPAN\nVoter ID\nDriving License\nOther"
+  },
+  {
+   "fieldname": "id_proof_number",
+   "fieldtype": "Data",
+   "label": "ID Proof Number"
+  },
+  {
+   "fieldname": "column_break_id",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "id_proof_attachment",
+   "fieldtype": "Attach Image",
+   "label": "ID Proof Attachment"
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo"
+  },
+  {
+   "fieldname": "section_break_address",
+   "fieldtype": "Section Break",
+   "label": "Address",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  }
+ ],
+ "image_field": "photo",
+ "links": [],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Worker",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Supervisor",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Accountant",
+   "share": 1
+  }
+ ],
+ "quick_entry": 0,
+ "search_fields": "worker_name,worker_type,mobile_no,status",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "title_field": "worker_name",
+ "track_changes": 1
+}

@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "autoname": "field:profile_name",
+ "creation": "2026-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "profile_name",
+  "description",
+  "column_break_1",
+  "section_break_rules",
+  "expense_range_rules"
+ ],
+ "fields": [
+  {
+   "fieldname": "profile_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Profile Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_rules",
+   "fieldtype": "Section Break",
+   "label": "Expense Range Rules"
+  },
+  {
+   "fieldname": "expense_range_rules",
+   "fieldtype": "Table",
+   "label": "Expense Range Rules",
+   "options": "Expense Range Rule"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Project Configuration Profile",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Refractec Supervisor"
+  },
+  {
+   "read": 1,
+   "role": "Refractec Accountant"
+  }
+ ],
+ "quick_entry": 0,
+ "search_fields": "profile_name",
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "title_field": "profile_name",
+ "track_changes": 1
+}
