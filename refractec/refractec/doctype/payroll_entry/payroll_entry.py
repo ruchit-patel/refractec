@@ -194,14 +194,9 @@ class PayrollEntry(Document):
 			flt(r.advance_deduction) for r in self.payroll_details
 		)
 		if total_recovered > 0:
-			frappe.db.sql(
-				"""
-				UPDATE `tabProject`
-				SET total_advance_recovered = COALESCE(total_advance_recovered, 0) + %s
-				WHERE name = %s
-			""",
-				(total_recovered, self.project),
-			)
+			project = frappe.get_doc("Project", self.project)
+			project.total_advance_recovered = flt(project.total_advance_recovered) + total_recovered
+			project.save(ignore_permissions=True)
 
 	def reverse_advance_recovery(self):
 		"""Reverse advance recovery when payroll is cancelled"""

@@ -18,9 +18,24 @@ class ExpenseEntry(Document):
 			)
 
 	def on_submit(self):
+		self.set_bill_from_attachments()
 		self.run_auto_approval()
 		if self.approval_status in ("Auto Approved", "Manually Approved"):
 			self.update_project_expense_cost()
+
+	def set_bill_from_attachments(self):
+		"""Auto-populate bill_attachment from sidebar attachments if field is empty."""
+		if self.bill_attachment:
+			return
+		file_url = frappe.db.get_value(
+			"File",
+			{"attached_to_doctype": self.doctype, "attached_to_name": self.name},
+			"file_url",
+			order_by="creation desc",
+		)
+		if file_url:
+			self.bill_attachment = file_url
+			self.db_set("bill_attachment", file_url, update_modified=False)
 
 	def on_cancel(self):
 		if self.approval_status in ("Auto Approved", "Manually Approved"):
@@ -58,8 +73,13 @@ class ExpenseEntry(Document):
 				)
 
 			# 3. Check bill attachment requirement
-			if matching_rule.requires_bill and not self.bill_attachment:
-				flag_reasons.append("Bill attachment required but not provided")
+			if matching_rule.requires_bill:
+				has_bill = self.bill_attachment or frappe.db.exists(
+					"File",
+					{"attached_to_doctype": "Expense Entry", "attached_to_name": self.name},
+				)
+				if not has_bill:
+					flag_reasons.append("Bill attachment required but not provided")
 
 		# 4. Check date validity
 		cutoff_days = project.expense_cutoff_days or 3
@@ -94,30 +114,18 @@ class ExpenseEntry(Document):
 			self.db_set("approved_on", self.approved_on, update_modified=False)
 
 	def update_project_expense_cost(self):
-		frappe.db.sql(
-			"""
-			UPDATE `tabProject`
-			SET total_expense_cost = COALESCE(total_expense_cost, 0) + %s,
-				total_cost = COALESCE(total_labor_cost, 0) + COALESCE(total_expense_cost, 0) + %s
-			WHERE name = %s
-		""",
-			(self.amount, self.amount, self.project),
-		)
+		project = frappe.get_doc("Project", self.project)
+		project.total_expense_cost = flt(project.total_expense_cost) + flt(self.amount)
+		project.save(ignore_permissions=True)
 
 		from refractec.refractec.utils import check_budget_alerts
 
 		check_budget_alerts(self.project)
 
 	def reverse_project_expense_cost(self):
-		frappe.db.sql(
-			"""
-			UPDATE `tabProject`
-			SET total_expense_cost = COALESCE(total_expense_cost, 0) - %s,
-				total_cost = COALESCE(total_labor_cost, 0) + COALESCE(total_expense_cost, 0) - %s
-			WHERE name = %s
-		""",
-			(self.amount, self.amount, self.project),
-		)
+		project = frappe.get_doc("Project", self.project)
+		project.total_expense_cost = flt(project.total_expense_cost) - flt(self.amount)
+		project.save(ignore_permissions=True)
 
 
 @frappe.whitelist()

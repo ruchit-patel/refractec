@@ -110,24 +110,14 @@ class WorkerAdvance(Document):
 		return flt(result[0][0]) if result else 0
 
 	def update_project_advance(self):
-		frappe.db.sql(
-			"""
-			UPDATE `tabProject`
-			SET total_advance_given = COALESCE(total_advance_given, 0) + %s
-			WHERE name = %s
-		""",
-			(self.amount, self.project),
-		)
+		project = frappe.get_doc("Project", self.project)
+		project.total_advance_given = flt(project.total_advance_given) + flt(self.amount)
+		project.save(ignore_permissions=True)
 
 	def reverse_project_advance(self):
-		frappe.db.sql(
-			"""
-			UPDATE `tabProject`
-			SET total_advance_given = COALESCE(total_advance_given, 0) - %s
-			WHERE name = %s
-		""",
-			(self.amount, self.project),
-		)
+		project = frappe.get_doc("Project", self.project)
+		project.total_advance_given = flt(project.total_advance_given) - flt(self.amount)
+		project.save(ignore_permissions=True)
 
 
 def get_permission_query_conditions(user):

@@ -21,8 +21,11 @@ export default function Expense() {
 	const { call: fetchExpenseTypes } = useFrappePostCall(
 		"refractec.api.get_expense_types"
 	);
-	const { call: submitExpense } = useFrappePostCall(
-		"refractec.api.submit_expense"
+	const { call: createExpense } = useFrappePostCall(
+		"refractec.api.create_expense"
+	);
+	const { call: finalizeExpense } = useFrappePostCall(
+		"refractec.api.finalize_expense"
 	);
 	const { upload } = useFrappeFileUpload();
 
@@ -71,8 +74,8 @@ export default function Expense() {
 
 		setSubmitting(true);
 		try {
-			// 1. Create expense entry
-			const res = await submitExpense({
+			// Step 1: Create draft expense
+			const res = await createExpense({
 				project: context.project.name,
 				expense_type: expenseType,
 				amount: parseFloat(amount),
@@ -80,28 +83,26 @@ export default function Expense() {
 			});
 
 			const expenseName = res?.message?.name;
-
-			// 2. Upload file attachment if provided
-			if (file && expenseName) {
-				try {
-					await upload(file, {
-						doctype: "Expense Entry",
-						docname: expenseName,
-						fieldname: "bill_attachment",
-						isPrivate: true,
-					});
-				} catch {
-					// File upload failed but expense was created
-					setToast({
-						message: "Expense created but bill upload failed. You can attach it later.",
-						type: "error",
-					});
-					setTimeout(() => navigate("/"), 2000);
-					return;
-				}
+			if (!expenseName) {
+				throw new Error("Failed to create expense");
 			}
 
-			const status = res?.message?.approval_status || "Submitted";
+			// Step 2: Upload file attachment if provided
+			if (file) {
+				await upload(file, {
+					doctype: "Expense Entry",
+					docname: expenseName,
+					fieldname: "bill_attachment",
+					isPrivate: true,
+				});
+			}
+
+			// Step 3: Submit the expense (picks up attached file)
+			const finalRes = await finalizeExpense({
+				expense_name: expenseName,
+			});
+
+			const status = finalRes?.message?.approval_status || "Submitted";
 			setToast({
 				message: `Expense submitted! Status: ${status}`,
 				type: "success",

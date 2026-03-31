@@ -8,6 +8,7 @@ from frappe.utils import flt
 
 class DailyAttendance(Document):
 	def validate(self):
+		self.validate_attendance_date()
 		self.validate_duplicate()
 		self.validate_workers_assigned()
 		self.validate_overtime()
@@ -24,6 +25,20 @@ class DailyAttendance(Document):
 			frappe.throw(
 				f"Attendance for {self.project} on {self.attendance_date} "
 				f"already exists: {existing}"
+			)
+
+	def validate_attendance_date(self):
+		from frappe.utils import getdate
+		project = frappe.get_doc("Project", self.project)
+		if getdate(self.attendance_date) < getdate(project.start_date):
+			frappe.throw(
+				f"Attendance date {self.attendance_date} is before "
+				f"project start date {project.start_date}"
+			)
+		if project.actual_end_date and getdate(self.attendance_date) > getdate(project.actual_end_date):
+			frappe.throw(
+				f"Attendance date {self.attendance_date} is after "
+				f"project end date {project.actual_end_date}"
 			)
 
 	def validate_workers_assigned(self):
@@ -103,27 +118,15 @@ class DailyAttendance(Document):
 
 	def update_project_labor_cost(self):
 		total_day_cost = sum(flt(r.total_for_day) for r in self.attendance_details)
-		frappe.db.sql(
-			"""
-			UPDATE `tabProject`
-			SET total_labor_cost = COALESCE(total_labor_cost, 0) + %s,
-				total_cost = COALESCE(total_labor_cost, 0) + %s + COALESCE(total_expense_cost, 0)
-			WHERE name = %s
-		""",
-			(total_day_cost, total_day_cost, self.project),
-		)
+		project = frappe.get_doc("Project", self.project)
+		project.total_labor_cost = flt(project.total_labor_cost) + total_day_cost
+		project.save(ignore_permissions=True)
 
 	def reverse_project_labor_cost(self):
 		total_day_cost = sum(flt(r.total_for_day) for r in self.attendance_details)
-		frappe.db.sql(
-			"""
-			UPDATE `tabProject`
-			SET total_labor_cost = COALESCE(total_labor_cost, 0) - %s,
-				total_cost = COALESCE(total_labor_cost, 0) - %s + COALESCE(total_expense_cost, 0)
-			WHERE name = %s
-		""",
-			(total_day_cost, total_day_cost, self.project),
-		)
+		project = frappe.get_doc("Project", self.project)
+		project.total_labor_cost = flt(project.total_labor_cost) - total_day_cost
+		project.save(ignore_permissions=True)
 
 
 def get_permission_query_conditions(user):

@@ -34,8 +34,6 @@
   "total_cost",
   "budget_variance",
   "budget_utilization_pct",
-  "section_break_budget_items",
-  "budget_items",
   "section_break_workers",
   "worker_assignments"
  ],
@@ -217,18 +215,6 @@
    "fieldtype": "Percent",
    "label": "Budget Utilization %",
    "read_only": 1
-  },
-  {
-   "fieldname": "section_break_budget_items",
-   "fieldtype": "Section Break",
-   "label": "Budget Line Items",
-   "collapsible": 1
-  },
-  {
-   "fieldname": "budget_items",
-   "fieldtype": "Table",
-   "label": "Budget Items",
-   "options": "Project Budget Item"
   },
   {
    "fieldname": "section_break_workers",

@@ -200,8 +200,9 @@ def submit_overtime(project, overtime_data):
 
 
 @frappe.whitelist()
-def submit_expense(project, expense_type, amount, description=None, expense_date=None):
-	"""Submit an expense entry.
+def create_expense(project, expense_type, amount, description=None, expense_date=None):
+	"""Create an expense entry as draft (Step 1).
+	Frontend should upload bill attachment next, then call finalize_expense.
 
 	Args:
 		project: Project name
@@ -226,6 +227,34 @@ def submit_expense(project, expense_type, amount, description=None, expense_date
 		"description": description or "",
 	})
 	doc.insert()
+
+	return {
+		"name": doc.name,
+		"message": "Expense created as draft. Upload bill and finalize.",
+	}
+
+
+@frappe.whitelist()
+def finalize_expense(expense_name):
+	"""Submit a draft expense entry (Step 2 — after file upload).
+	Picks up any attached files and sets bill_attachment before submitting.
+	"""
+	doc = frappe.get_doc("Expense Entry", expense_name)
+
+	if doc.docstatus != 0:
+		frappe.throw("Expense is already submitted")
+
+	# Pick up file attached via upload
+	if not doc.bill_attachment:
+		file_url = frappe.db.get_value(
+			"File",
+			{"attached_to_doctype": "Expense Entry", "attached_to_name": expense_name},
+			"file_url",
+			order_by="creation desc",
+		)
+		if file_url:
+			doc.bill_attachment = file_url
+
 	doc.submit()
 
 	return {
@@ -233,31 +262,6 @@ def submit_expense(project, expense_type, amount, description=None, expense_date
 		"approval_status": doc.approval_status,
 		"message": f"Expense submitted. Status: {doc.approval_status}",
 	}
-
-
-@frappe.whitelist()
-def upload_expense_bill(expense_name):
-	"""Attach an uploaded file to an expense entry.
-	The file is uploaded via standard Frappe file upload, then linked here.
-	"""
-	doc = frappe.get_doc("Expense Entry", expense_name)
-
-	# Get the last uploaded file for this document
-	file_doc = frappe.get_all(
-		"File",
-		filters={
-			"attached_to_doctype": "Expense Entry",
-			"attached_to_name": expense_name,
-		},
-		fields=["file_url"],
-		order_by="creation desc",
-		limit=1,
-	)
-
-	if file_doc:
-		doc.db_set("bill_attachment", file_doc[0].file_url)
-
-	return {"message": "Bill attached successfully"}
 
 
 @frappe.whitelist()

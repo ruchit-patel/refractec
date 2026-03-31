@@ -26,9 +26,6 @@ class Project(Document):
 			seen.add(row.worker)
 
 	def compute_budget_totals(self):
-		for item in self.budget_items:
-			item.remaining_amount = flt(item.allocated_amount) - flt(item.spent_amount)
-
 		self.total_cost = flt(self.total_labor_cost) + flt(self.total_expense_cost)
 		self.budget_variance = flt(self.project_budget) - flt(self.total_cost)
 		if flt(self.project_budget):
