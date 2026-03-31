@@ -96,7 +96,9 @@ class PayrollEntry(Document):
 				)[0][0]
 			)
 
-			net_pay = gross_pay - advance_total
+			# Cap deduction at gross_pay — remaining advance carries to next month
+			advance_deduction = min(advance_total, gross_pay)
+			net_pay = gross_pay - advance_deduction
 
 			self.append("payroll_details", {
 				"worker": worker_id,
@@ -109,7 +111,7 @@ class PayrollEntry(Document):
 				"gross_wage": gross_wage,
 				"overtime_amount": ot_amount,
 				"gross_pay": gross_pay,
-				"advance_deduction": advance_total,
+				"advance_deduction": advance_deduction,
 				"other_deductions": 0,
 				"net_pay": net_pay,
 			})
