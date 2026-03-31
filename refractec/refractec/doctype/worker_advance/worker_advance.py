@@ -143,3 +143,26 @@ def has_permission(doc, ptype, user):
 		pluck="for_value",
 	)
 	return doc.project in permitted_projects
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_project_workers(doctype, txt, searchfield, start, page_len, filters):
+	"""Return workers assigned to a project, for use in Link field search."""
+	project = filters.get("project")
+	if not project:
+		return []
+
+	return frappe.db.sql(
+		"""
+		SELECT w.name, w.worker_name, w.worker_type
+		FROM `tabWorker` w
+		JOIN `tabProject Worker Assignment` pwa ON pwa.worker = w.name
+		WHERE pwa.parent = %(project)s
+		  AND pwa.is_active = 1
+		  AND (w.name LIKE %(txt)s OR w.worker_name LIKE %(txt)s)
+		ORDER BY w.worker_name
+		LIMIT %(page_len)s OFFSET %(start)s
+	""",
+		{"project": project, "txt": f"%{txt}%", "page_len": page_len, "start": start},
+	)
