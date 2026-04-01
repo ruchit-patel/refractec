@@ -22,6 +22,8 @@ class ExpenseEntry(Document):
 		self.run_auto_approval()
 		if self.approval_status in ("Auto Approved", "Manually Approved"):
 			self.update_project_expense_cost()
+		if self.from_supervisor_fund:
+			self.update_supervisor_fund("add")
 
 	def set_bill_from_attachments(self):
 		"""Auto-populate bill_attachment from sidebar attachments if field is empty."""
@@ -40,6 +42,8 @@ class ExpenseEntry(Document):
 	def on_cancel(self):
 		if self.approval_status in ("Auto Approved", "Manually Approved"):
 			self.reverse_project_expense_cost()
+		if self.from_supervisor_fund:
+			self.update_supervisor_fund("subtract")
 
 	def run_auto_approval(self):
 		project = frappe.get_doc("Project", self.project)
@@ -129,6 +133,22 @@ class ExpenseEntry(Document):
 	def reverse_project_expense_cost(self):
 		project = frappe.get_doc("Project", self.project)
 		project.total_expense_cost = flt(project.total_expense_cost) - flt(self.amount)
+		project.save(ignore_permissions=True)
+
+	def update_supervisor_fund(self, action):
+		"""Update project's supervisor fund tracking on expense submit/cancel."""
+		project = frappe.get_doc("Project", self.project)
+		sign = 1 if action == "add" else -1
+		mode = getattr(self, "payment_mode", "Cash") or "Cash"
+
+		project.fund_cash_out = flt(project.fund_cash_out)
+		project.fund_bank_out = flt(project.fund_bank_out)
+
+		if mode == "Cash":
+			project.fund_cash_out += sign * flt(self.amount)
+		else:
+			project.fund_bank_out += sign * flt(self.amount)
+
 		project.save(ignore_permissions=True)
 
 

@@ -94,6 +94,13 @@ def get_supervisor_context():
 		"is_past_cutoff": is_past_cutoff,
 		"max_ot_hours": int(project_doc.max_overtime_hours_per_day or 4),
 		"today": today(),
+		"fund": {
+			"total_given": flt(project_doc.total_fund_given),
+			"total_spent": flt(project_doc.total_fund_spent),
+			"balance": flt(project_doc.fund_balance),
+			"cash_balance": flt(project_doc.fund_cash_balance),
+			"bank_balance": flt(project_doc.fund_bank_balance),
+		},
 	}
 
 
@@ -200,7 +207,7 @@ def submit_overtime(project, overtime_data):
 
 
 @frappe.whitelist()
-def create_expense(project, expense_type, amount, description=None, expense_date=None):
+def create_expense(project, expense_type, amount, description=None, expense_date=None, payment_mode="Cash"):
 	"""Create an expense entry as draft (Step 1).
 	Frontend should upload bill attachment next, then call finalize_expense.
 
@@ -210,6 +217,7 @@ def create_expense(project, expense_type, amount, description=None, expense_date
 		amount: Amount
 		description: Optional description
 		expense_date: Optional expense date (defaults to today)
+		payment_mode: Cash / Bank Transfer / UPI
 	"""
 	user = frappe.session.user
 	worker = _get_worker_for_user(user)
@@ -225,6 +233,8 @@ def create_expense(project, expense_type, amount, description=None, expense_date
 		"amount": flt(amount),
 		"submitted_by": worker.name,
 		"description": description or "",
+		"payment_mode": payment_mode or "Cash",
+		"from_supervisor_fund": 1,
 	})
 	doc.insert()
 
@@ -379,6 +389,7 @@ def submit_advance(project, worker, amount, payment_mode="Cash", reference_no=No
 		"payment_mode": payment_mode or "Cash",
 		"reference_no": reference_no or "",
 		"purpose": purpose or "",
+		"from_supervisor_fund": 1,
 	})
 	doc.insert()
 	doc.submit()

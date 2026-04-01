@@ -32,3 +32,9 @@ class Project(Document):
 			self.budget_utilization_pct = (flt(self.total_cost) / flt(self.project_budget)) * 100
 		else:
 			self.budget_utilization_pct = 0
+
+		# Fund balances
+		self.total_fund_spent = flt(self.fund_cash_out) + flt(self.fund_bank_out)
+		self.fund_balance = flt(self.total_fund_given) - flt(self.total_fund_spent)
+		self.fund_cash_balance = flt(self.fund_cash_in) - flt(self.fund_cash_out)
+		self.fund_bank_balance = flt(self.fund_bank_in) - flt(self.fund_bank_out)

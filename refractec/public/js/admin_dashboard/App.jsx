@@ -210,8 +210,8 @@ function ProjectCard({ project: p }) {
 						}}>{p.health}</span>
 					</div>
 					<div style={{ fontSize: 12, color: C.gray500, marginTop: 4 }}>
-						{p.workers} Workers &middot; {p.supervisors} Supervisor{p.supervisors !== 1 ? "s" : ""}
-						{p.start_date && ` &middot; Since ${frappe.datetime.str_to_user(p.start_date)}`}
+						{p.workers} Workers {"\u00B7"} {p.supervisors} Supervisor{p.supervisors !== 1 ? "s" : ""}
+						{p.start_date && ` \u00B7 Since ${frappe.datetime.str_to_user(p.start_date)}`}
 					</div>
 				</div>
 				<FeatherIcon name="chevron-right" size={18} color={C.gray400} />

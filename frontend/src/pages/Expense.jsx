@@ -13,6 +13,7 @@ export default function Expense() {
 	const [expenseType, setExpenseType] = useState("");
 	const [expenseDate, setExpenseDate] = useState(new Date().toISOString().split("T")[0]);
 	const [amount, setAmount] = useState("");
+	const [paymentMode, setPaymentMode] = useState("Cash");
 	const [description, setDescription] = useState("");
 	const [file, setFile] = useState(null);
 	const [submitting, setSubmitting] = useState(false);
@@ -82,6 +83,7 @@ export default function Expense() {
 				amount: parseFloat(amount),
 				description: description || "",
 				expense_date: expenseDate,
+				payment_mode: paymentMode,
 			});
 
 			const expenseName = res?.message?.name;
@@ -114,6 +116,7 @@ export default function Expense() {
 			setExpenseType("");
 			setExpenseDate(new Date().toISOString().split("T")[0]);
 			setAmount("");
+			setPaymentMode("Cash");
 			setDescription("");
 			setFile(null);
 
@@ -143,6 +146,32 @@ export default function Expense() {
 				/>
 			)}
 			<div className="app-content">
+				{/* Fund Balance Card */}
+				{context?.fund && context.fund.total_given > 0 && (
+					<div style={{
+						display: "flex", gap: 8, marginBottom: 16,
+					}}>
+						<div style={{
+							flex: 1, background: "white", borderRadius: "var(--radius-sm)",
+							padding: "10px 12px", boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+						}}>
+							<div style={{ fontSize: 11, color: "var(--gray-500)", marginBottom: 2 }}>Cash Balance</div>
+							<div style={{ fontSize: 16, fontWeight: 700, color: context.fund.cash_balance > 0 ? "var(--success)" : "var(--danger)" }}>
+								₹{context.fund.cash_balance.toLocaleString("en-IN")}
+							</div>
+						</div>
+						<div style={{
+							flex: 1, background: "white", borderRadius: "var(--radius-sm)",
+							padding: "10px 12px", boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+						}}>
+							<div style={{ fontSize: 11, color: "var(--gray-500)", marginBottom: 2 }}>Bank Balance</div>
+							<div style={{ fontSize: 16, fontWeight: 700, color: context.fund.bank_balance > 0 ? "var(--success)" : "var(--danger)" }}>
+								₹{context.fund.bank_balance.toLocaleString("en-IN")}
+							</div>
+						</div>
+					</div>
+				)}
+
 				<form className="expense-form" onSubmit={handleSubmit}>
 					{/* Expense Type */}
 					<div className="form-group">
@@ -186,6 +215,20 @@ export default function Expense() {
 							min="0"
 							step="0.01"
 						/>
+					</div>
+
+					{/* Payment Mode */}
+					<div className="form-group">
+						<label>Payment Mode</label>
+						<select
+							className="form-select"
+							value={paymentMode}
+							onChange={(e) => setPaymentMode(e.target.value)}
+						>
+							<option value="Cash">Cash</option>
+							<option value="Bank Transfer">Bank Transfer</option>
+							<option value="UPI">UPI</option>
+						</select>
 					</div>
 
 					{/* Description */}

@@ -66,6 +66,39 @@ export default function Home() {
 					</button>
 				</div>
 
+				{/* Fund Balance */}
+				{context?.fund && context.fund.total_given > 0 && (
+					<div style={{
+						background: "white", borderRadius: "var(--radius)",
+						padding: "14px 16px", marginBottom: 16,
+						boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+					}}>
+						<div style={{ fontSize: 13, fontWeight: 600, color: "var(--gray-500)", marginBottom: 8 }}>
+							Fund Balance
+						</div>
+						<div style={{ display: "flex", gap: 12 }}>
+							<div style={{ flex: 1 }}>
+								<div style={{ fontSize: 11, color: "var(--gray-400)" }}>Cash</div>
+								<div style={{ fontSize: 18, fontWeight: 700, color: context.fund.cash_balance >= 0 ? "var(--gray-900)" : "var(--danger)" }}>
+									₹{context.fund.cash_balance.toLocaleString("en-IN")}
+								</div>
+							</div>
+							<div style={{ flex: 1 }}>
+								<div style={{ fontSize: 11, color: "var(--gray-400)" }}>Bank</div>
+								<div style={{ fontSize: 18, fontWeight: 700, color: context.fund.bank_balance >= 0 ? "var(--gray-900)" : "var(--danger)" }}>
+									₹{context.fund.bank_balance.toLocaleString("en-IN")}
+								</div>
+							</div>
+							<div style={{ flex: 1 }}>
+								<div style={{ fontSize: 11, color: "var(--gray-400)" }}>Total</div>
+								<div style={{ fontSize: 18, fontWeight: 700, color: context.fund.balance >= 0 ? "var(--success)" : "var(--danger)" }}>
+									₹{context.fund.balance.toLocaleString("en-IN")}
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+
 				<div className="home-grid">
 					{/* 1. Attendance */}
 					<button className="home-card" onClick={() => navigate("/attendance")}>

@@ -17,6 +17,7 @@
   "section_break_payment",
   "payment_mode",
   "reference_no",
+  "from_supervisor_fund",
   "column_break_payment",
   "purpose",
   "section_break_recovery",
@@ -111,6 +112,13 @@
    "fieldtype": "Data",
    "label": "Reference No",
    "depends_on": "eval:doc.payment_mode !== 'Cash'"
+  },
+  {
+   "default": "0",
+   "fieldname": "from_supervisor_fund",
+   "fieldtype": "Check",
+   "label": "From Supervisor Fund",
+   "description": "Auto-set when submitted from supervisor app"
   },
   {
    "fieldname": "column_break_payment",

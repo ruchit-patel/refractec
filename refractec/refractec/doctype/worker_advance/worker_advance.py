@@ -61,10 +61,14 @@ class WorkerAdvance(Document):
 	def on_submit(self):
 		self.create_ledger_entry()
 		self.update_project_advance()
+		if self.from_supervisor_fund:
+			self.update_supervisor_fund("add")
 
 	def on_cancel(self):
 		self.reverse_ledger_entry()
 		self.reverse_project_advance()
+		if self.from_supervisor_fund:
+			self.update_supervisor_fund("subtract")
 
 	def create_ledger_entry(self):
 		last_balance = self._get_last_balance()
@@ -117,6 +121,22 @@ class WorkerAdvance(Document):
 	def reverse_project_advance(self):
 		project = frappe.get_doc("Project", self.project)
 		project.total_advance_given = flt(project.total_advance_given) - flt(self.amount)
+		project.save(ignore_permissions=True)
+
+	def update_supervisor_fund(self, action):
+		"""Update project's supervisor fund tracking on advance submit/cancel."""
+		project = frappe.get_doc("Project", self.project)
+		sign = 1 if action == "add" else -1
+		mode = self.payment_mode or "Cash"
+
+		project.fund_cash_out = flt(project.fund_cash_out)
+		project.fund_bank_out = flt(project.fund_bank_out)
+
+		if mode == "Cash":
+			project.fund_cash_out += sign * flt(self.amount)
+		else:
+			project.fund_bank_out += sign * flt(self.amount)
+
 		project.save(ignore_permissions=True)
 
 

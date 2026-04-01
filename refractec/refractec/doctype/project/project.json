@@ -34,6 +34,17 @@
   "total_cost",
   "budget_variance",
   "budget_utilization_pct",
+  "section_break_fund",
+  "total_fund_given",
+  "fund_cash_in",
+  "fund_bank_in",
+  "column_break_fund",
+  "total_fund_spent",
+  "fund_cash_out",
+  "fund_bank_out",
+  "fund_balance",
+  "fund_cash_balance",
+  "fund_bank_balance",
   "section_break_workers",
   "worker_assignments"
  ],
@@ -217,6 +228,82 @@
    "read_only": 1
   },
   {
+   "fieldname": "section_break_fund",
+   "fieldtype": "Section Break",
+   "label": "Supervisor Fund",
+   "collapsible": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_fund_given",
+   "fieldtype": "Currency",
+   "label": "Total Fund Given",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_cash_in",
+   "fieldtype": "Currency",
+   "label": "Cash Given",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_bank_in",
+   "fieldtype": "Currency",
+   "label": "Bank Given",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_fund",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_fund_spent",
+   "fieldtype": "Currency",
+   "label": "Total Fund Spent",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_cash_out",
+   "fieldtype": "Currency",
+   "label": "Cash Spent",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_bank_out",
+   "fieldtype": "Currency",
+   "label": "Bank Spent",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_balance",
+   "fieldtype": "Currency",
+   "label": "Fund Balance",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_cash_balance",
+   "fieldtype": "Currency",
+   "label": "Cash Balance",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "fund_bank_balance",
+   "fieldtype": "Currency",
+   "label": "Bank Balance",
+   "read_only": 1
+  },
+  {
    "fieldname": "section_break_workers",
    "fieldtype": "Section Break",
    "label": "Worker Assignments"
@@ -247,6 +334,11 @@
   {
    "group": "Transactions",
    "link_doctype": "Payroll Entry",
+   "link_fieldname": "project"
+  },
+  {
+   "group": "Fund",
+   "link_doctype": "Supervisor Fund Transfer",
    "link_fieldname": "project"
   }
  ],

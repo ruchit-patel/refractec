@@ -12,6 +12,8 @@
   "posting_date",
   "column_break_1",
   "amount",
+  "payment_mode",
+  "from_supervisor_fund",
   "submitted_by",
   "submitted_by_name",
   "submitted_by_type",
@@ -83,6 +85,20 @@
    "in_list_view": 1,
    "label": "Amount",
    "reqd": 1
+  },
+  {
+   "default": "Cash",
+   "fieldname": "payment_mode",
+   "fieldtype": "Select",
+   "label": "Payment Mode",
+   "options": "Cash\nBank Transfer\nUPI"
+  },
+  {
+   "default": "0",
+   "fieldname": "from_supervisor_fund",
+   "fieldtype": "Check",
+   "label": "From Supervisor Fund",
+   "description": "Auto-set when submitted from supervisor app"
   },
   {
    "fieldname": "submitted_by",
