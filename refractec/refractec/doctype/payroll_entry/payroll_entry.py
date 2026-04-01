@@ -20,12 +20,32 @@ class PayrollEntry(Document):
 		self.recalculate_totals()
 
 	def recalculate_totals(self):
-		"""Recalculate net_pay per row and summary totals (handles other_deductions edits)."""
+		"""Recalculate per-worker totals from earnings/deductions tables, then summary."""
+		# Aggregate earnings per worker
+		worker_earnings = {}
+		for row in (self.earnings or []):
+			worker_earnings[row.worker] = flt(worker_earnings.get(row.worker, 0)) + flt(row.amount)
+
+		# Aggregate deductions per worker
+		worker_deductions = {}
+		for row in (self.deductions or []):
+			worker_deductions[row.worker] = flt(worker_deductions.get(row.worker, 0)) + flt(row.amount)
+
 		for row in self.payroll_details:
-			row.net_pay = flt(row.gross_pay) - flt(row.advance_deduction) - flt(row.other_deductions)
+			row.total_earnings = flt(worker_earnings.get(row.worker, 0))
+			row.total_deductions = flt(worker_deductions.get(row.worker, 0))
+			row.gross_pay = flt(row.gross_wage) + flt(row.overtime_amount) + flt(row.total_earnings)
+			row.net_pay = (
+				flt(row.gross_pay)
+				- flt(row.advance_deduction)
+				- flt(row.total_deductions)
+				- flt(row.other_deductions)
+			)
 
 		self.total_gross_pay = sum(flt(r.gross_pay) for r in self.payroll_details)
+		self.total_earnings = sum(flt(r.total_earnings) for r in self.payroll_details)
 		self.total_advance_deduction = sum(flt(r.advance_deduction) for r in self.payroll_details)
+		self.total_deductions = sum(flt(r.total_deductions) for r in self.payroll_details)
 		self.total_net_pay = sum(flt(r.net_pay) for r in self.payroll_details)
 
 	def set_date_range(self):

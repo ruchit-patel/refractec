@@ -14,7 +14,9 @@
   "gross_wage",
   "overtime_amount",
   "gross_pay",
+  "total_earnings",
   "advance_deduction",
+  "total_deductions",
   "other_deductions",
   "net_pay"
  ],
@@ -87,11 +89,27 @@
    "bold": 1
   },
   {
+   "default": "0",
+   "fieldname": "total_earnings",
+   "fieldtype": "Currency",
+   "label": "Earnings",
+   "read_only": 1,
+   "description": "Sum of additional earning components for this worker"
+  },
+  {
    "fieldname": "advance_deduction",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Advance Deduction",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_deductions",
+   "fieldtype": "Currency",
+   "label": "Deductions",
+   "read_only": 1,
+   "description": "Sum of additional deduction components for this worker"
   },
   {
    "default": "0",

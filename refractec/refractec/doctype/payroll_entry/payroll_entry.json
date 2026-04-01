@@ -14,11 +14,18 @@
   "to_date",
   "section_break_summary",
   "total_gross_pay",
+  "total_earnings",
+  "column_break_summary",
   "total_advance_deduction",
+  "total_deductions",
   "total_net_pay",
   "amended_from",
   "section_break_details",
-  "payroll_details"
+  "payroll_details",
+  "section_break_earnings",
+  "earnings",
+  "section_break_deductions",
+  "deductions"
  ],
  "fields": [
   {
@@ -85,10 +92,30 @@
   },
   {
    "default": "0",
+   "fieldname": "total_earnings",
+   "fieldtype": "Currency",
+   "label": "Total Earnings",
+   "read_only": 1,
+   "description": "Sum of additional earning components"
+  },
+  {
+   "fieldname": "column_break_summary",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
    "fieldname": "total_advance_deduction",
    "fieldtype": "Currency",
    "label": "Total Advance Deduction",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_deductions",
+   "fieldtype": "Currency",
+   "label": "Total Deductions",
+   "read_only": 1,
+   "description": "Sum of additional deduction components"
   },
   {
    "default": "0",
@@ -120,6 +147,32 @@
    "options": "Payroll Detail",
    "cannot_add_rows": 1,
    "cannot_delete_rows": 1
+  },
+  {
+   "fieldname": "section_break_earnings",
+   "fieldtype": "Section Break",
+   "label": "Additional Earnings",
+   "collapsible": 1,
+   "description": "Add earning components per worker (Travel Allowance, Food Allowance, etc.)"
+  },
+  {
+   "fieldname": "earnings",
+   "fieldtype": "Table",
+   "label": "Earnings",
+   "options": "Payroll Earning"
+  },
+  {
+   "fieldname": "section_break_deductions",
+   "fieldtype": "Section Break",
+   "label": "Additional Deductions",
+   "collapsible": 1,
+   "description": "Add deduction components per worker (PF, ESI, Penalties, etc.)"
+  },
+  {
+   "fieldname": "deductions",
+   "fieldtype": "Table",
+   "label": "Deductions",
+   "options": "Payroll Deduction"
   }
  ],
  "is_submittable": 1,
