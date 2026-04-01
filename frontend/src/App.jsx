@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Attendance from "./pages/Attendance";
 import Overtime from "./pages/Overtime";
 import Expense from "./pages/Expense";
+import Advance from "./pages/Advance";
 
 function App() {
 	return (
@@ -17,6 +18,7 @@ function App() {
 					<Route path="/attendance" element={<Attendance />} />
 					<Route path="/overtime" element={<Overtime />} />
 					<Route path="/expense" element={<Expense />} />
+					<Route path="/advance" element={<Advance />} />
 					<Route path="*" element={<Navigate to="/" replace />} />
 				</Routes>
 			</BrowserRouter>

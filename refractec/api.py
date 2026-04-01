@@ -265,6 +265,82 @@ def finalize_expense(expense_name):
 
 
 @frappe.whitelist()
+def submit_advance(project, worker, amount, payment_mode="Cash", reference_no=None, purpose=None):
+	"""Submit a worker advance from the supervisor frontend.
+
+	Args:
+		project: Project name
+		worker: Worker name (ID)
+		amount: Advance amount
+		payment_mode: Cash / Bank Transfer / UPI
+		reference_no: Reference number for non-cash payments
+		purpose: Optional purpose text
+	"""
+	user = frappe.session.user
+	supervisor = _get_worker_for_user(user)
+	if not supervisor:
+		frappe.throw("No Worker record found for your account")
+	if supervisor.worker_type != "Supervisor":
+		frappe.throw("Only Supervisors can give advances")
+
+	doc = frappe.get_doc({
+		"doctype": "Worker Advance",
+		"project": project,
+		"worker": worker,
+		"advance_date": today(),
+		"amount": flt(amount),
+		"given_by": supervisor.name,
+		"payment_mode": payment_mode or "Cash",
+		"reference_no": reference_no or "",
+		"purpose": purpose or "",
+	})
+	doc.insert()
+	doc.submit()
+
+	return {
+		"name": doc.name,
+		"message": f"Advance of ₹{amount} given to {doc.worker_name}",
+	}
+
+
+@frappe.whitelist()
+def get_advance_history(project, worker=None):
+	"""Get advance history for a project, optionally filtered by worker.
+
+	Args:
+		project: Project name
+		worker: Optional worker ID to filter by
+	"""
+	filters = {"project": project, "docstatus": 1}
+	if worker:
+		filters["worker"] = worker
+
+	advances = frappe.get_all(
+		"Worker Advance",
+		filters=filters,
+		fields=[
+			"name", "worker", "worker_name", "advance_date", "amount",
+			"payment_mode", "purpose", "recovery_status", "recovered_amount",
+			"given_by_name",
+		],
+		order_by="advance_date desc",
+		limit=50,
+	)
+
+	# Calculate totals
+	total_advanced = sum(flt(a.amount) for a in advances)
+	total_recovered = sum(flt(a.recovered_amount) for a in advances)
+	total_outstanding = total_advanced - total_recovered
+
+	return {
+		"advances": advances,
+		"total_advanced": total_advanced,
+		"total_recovered": total_recovered,
+		"total_outstanding": total_outstanding,
+	}
+
+
+@frappe.whitelist()
 def get_expense_types():
 	"""Get list of enabled expense types."""
 	return frappe.get_all(

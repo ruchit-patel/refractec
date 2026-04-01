@@ -116,6 +116,16 @@ export default function Home() {
 						</div>
 						<span className="arrow">&#8250;</span>
 					</button>
+
+					{/* 4. Worker Advance */}
+					<button className="home-card" onClick={() => navigate("/advance")}>
+						<div className="icon" style={{ background: "#e0e7ff" }}>💵</div>
+						<div className="card-info">
+							<div>Worker Advance</div>
+							<div className="card-desc">Give advance to a worker</div>
+						</div>
+						<span className="arrow">&#8250;</span>
+					</button>
 				</div>
 			</div>
 		</>
