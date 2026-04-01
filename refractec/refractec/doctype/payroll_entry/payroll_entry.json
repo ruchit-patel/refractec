@@ -117,7 +117,9 @@
    "fieldname": "payroll_details",
    "fieldtype": "Table",
    "label": "Payroll Details",
-   "options": "Payroll Detail"
+   "options": "Payroll Detail",
+   "cannot_add_rows": 1,
+   "cannot_delete_rows": 1
   }
  ],
  "is_submittable": 1,

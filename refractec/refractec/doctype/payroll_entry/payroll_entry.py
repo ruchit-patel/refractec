@@ -18,6 +18,16 @@ class PayrollEntry(Document):
 	def validate(self):
 		self.set_date_range()
 		self.validate_duplicate_payroll()
+		self.recalculate_totals()
+
+	def recalculate_totals(self):
+		"""Recalculate net_pay per row and summary totals (handles other_deductions edits)."""
+		for row in self.payroll_details:
+			row.net_pay = flt(row.gross_pay) - flt(row.advance_deduction) - flt(row.other_deductions)
+
+		self.total_gross_pay = sum(flt(r.gross_pay) for r in self.payroll_details)
+		self.total_advance_deduction = sum(flt(r.advance_deduction) for r in self.payroll_details)
+		self.total_net_pay = sum(flt(r.net_pay) for r in self.payroll_details)
 
 	def set_date_range(self):
 		month_number = MONTH_NAMES.index(self.payroll_month) + 1
@@ -235,3 +245,17 @@ class PayrollEntry(Document):
 			(self.project, worker),
 		)
 		return flt(result[0][0]) if result else 0
+
+
+@frappe.whitelist()
+def create_and_generate_payroll(project, payroll_month, payroll_year):
+	"""Create a new Payroll Entry and generate payroll in one step."""
+	doc = frappe.get_doc({
+		"doctype": "Payroll Entry",
+		"project": project,
+		"payroll_month": payroll_month,
+		"payroll_year": int(payroll_year),
+	})
+	doc.insert()
+	doc.generate_payroll()
+	return doc.name
