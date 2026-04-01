@@ -96,6 +96,10 @@ class ExpenseEntry(Document):
 		if getdate(self.expense_date) > getdate(today()):
 			flag_reasons.append("Expense date is in the future (pre-dated)")
 
+		# Preserve flag if already set (e.g. edited expense)
+		if self.is_flagged and self.flag_reason:
+			flag_reasons.insert(0, self.flag_reason)
+
 		# Decision
 		if flag_reasons:
 			self.is_flagged = 1
