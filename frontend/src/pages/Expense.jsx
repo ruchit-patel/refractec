@@ -11,6 +11,7 @@ export default function Expense() {
 	const { context, loading } = useSupervisor();
 	const [expenseTypes, setExpenseTypes] = useState([]);
 	const [expenseType, setExpenseType] = useState("");
+	const [expenseDate, setExpenseDate] = useState(new Date().toISOString().split("T")[0]);
 	const [amount, setAmount] = useState("");
 	const [description, setDescription] = useState("");
 	const [file, setFile] = useState(null);
@@ -80,6 +81,7 @@ export default function Expense() {
 				expense_type: expenseType,
 				amount: parseFloat(amount),
 				description: description || "",
+				expense_date: expenseDate,
 			});
 
 			const expenseName = res?.message?.name;
@@ -110,6 +112,7 @@ export default function Expense() {
 
 			// Reset form
 			setExpenseType("");
+			setExpenseDate(new Date().toISOString().split("T")[0]);
 			setAmount("");
 			setDescription("");
 			setFile(null);
@@ -156,6 +159,18 @@ export default function Expense() {
 								</option>
 							))}
 						</select>
+					</div>
+
+					{/* Expense Date */}
+					<div className="form-group">
+						<label>Expense Date</label>
+						<input
+							className="form-input"
+							type="date"
+							value={expenseDate}
+							onChange={(e) => setExpenseDate(e.target.value)}
+							max={new Date().toISOString().split("T")[0]}
+						/>
 					</div>
 
 					{/* Amount */}
