@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "transfer_type",
   "project",
   "supervisor",
   "supervisor_name",
@@ -14,6 +15,8 @@
   "amount",
   "payment_mode",
   "reference_no",
+  "section_break_transfer",
+  "to_project",
   "section_break_remarks",
   "remarks",
   "amended_from"
@@ -26,6 +29,16 @@
    "options": "SFT-.YYYY.-.#####",
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "default": "Fund Given",
+   "fieldname": "transfer_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Transfer Type",
+   "options": "Fund Given\nFund Returned\nInter-Project Transfer",
+   "reqd": 1
   },
   {
    "fieldname": "project",
@@ -86,6 +99,20 @@
    "fieldname": "reference_no",
    "fieldtype": "Data",
    "label": "Reference No"
+  },
+  {
+   "fieldname": "section_break_transfer",
+   "fieldtype": "Section Break",
+   "label": "Transfer To",
+   "depends_on": "eval:doc.transfer_type === 'Inter-Project Transfer'"
+  },
+  {
+   "fieldname": "to_project",
+   "fieldtype": "Link",
+   "label": "To Project",
+   "options": "Project",
+   "depends_on": "eval:doc.transfer_type === 'Inter-Project Transfer'",
+   "mandatory_depends_on": "eval:doc.transfer_type === 'Inter-Project Transfer'"
   },
   {
    "fieldname": "section_break_remarks",
