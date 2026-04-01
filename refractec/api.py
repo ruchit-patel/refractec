@@ -265,6 +265,92 @@ def finalize_expense(expense_name):
 
 
 @frappe.whitelist()
+def get_my_expenses(project):
+	"""Get all expenses submitted by the logged-in supervisor for a project."""
+	user = frappe.session.user
+	worker = _get_worker_for_user(user)
+	if not worker:
+		frappe.throw("No Worker record found for your account")
+
+	expenses = frappe.get_all(
+		"Expense Entry",
+		filters={"project": project, "submitted_by": worker.name, "docstatus": ["!=", 2]},
+		fields=[
+			"name", "expense_type", "expense_date", "amount", "description",
+			"approval_status", "is_flagged", "flag_reason", "bill_attachment",
+			"posting_date", "docstatus",
+		],
+		order_by="expense_date desc",
+		limit=50,
+	)
+
+	# Fetch expense type names
+	for e in expenses:
+		e.expense_type_name = frappe.db.get_value("Expense Type", e.expense_type, "expense_type_name") or e.expense_type
+
+	return expenses
+
+
+@frappe.whitelist()
+def edit_expense(expense_name, expense_type=None, amount=None, description=None, expense_date=None):
+	"""Edit a submitted expense by amending it. The amended expense is always flagged.
+
+	Args:
+		expense_name: Original Expense Entry name
+		expense_type: New expense type (optional)
+		amount: New amount (optional)
+		description: New description (optional)
+		expense_date: New expense date (optional)
+	"""
+	user = frappe.session.user
+	worker = _get_worker_for_user(user)
+	if not worker:
+		frappe.throw("No Worker record found for your account")
+
+	original = frappe.get_doc("Expense Entry", expense_name)
+
+	if original.submitted_by != worker.name:
+		frappe.throw("You can only edit expenses you submitted")
+
+	if original.docstatus != 1:
+		frappe.throw("Only submitted expenses can be edited")
+
+	# Cancel original
+	original.cancel()
+
+	# Create amended copy
+	amended = frappe.copy_doc(original)
+	amended.amended_from = original.name
+
+	# Apply changes
+	if expense_type:
+		amended.expense_type = expense_type
+	if amount is not None:
+		amended.amount = flt(amount)
+	if description is not None:
+		amended.description = description
+	if expense_date:
+		amended.expense_date = expense_date
+
+	# Flag the edited expense
+	amended.is_flagged = 1
+	amended.flag_reason = f"Edited by {worker.worker_name} on {today()}"
+
+	# Copy bill attachment from original if it had one
+	if original.bill_attachment and not amended.bill_attachment:
+		amended.bill_attachment = original.bill_attachment
+
+	amended.insert()
+	amended.submit()
+
+	return {
+		"name": amended.name,
+		"approval_status": amended.approval_status,
+		"message": f"Expense updated and flagged. Status: {amended.approval_status}",
+	}
+
+
+@frappe.whitelist()
 def submit_advance(project, worker, amount, payment_mode="Cash", reference_no=None, purpose=None):
 	"""Submit a worker advance from the supervisor frontend.
 

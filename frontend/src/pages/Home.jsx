@@ -126,6 +126,16 @@ export default function Home() {
 						</div>
 						<span className="arrow">&#8250;</span>
 					</button>
+
+					{/* 5. My Expenses */}
+					<button className="home-card" onClick={() => navigate("/my-expenses")}>
+						<div className="icon" style={{ background: "#fef3c7" }}>📒</div>
+						<div className="card-info">
+							<div>My Expenses</div>
+							<div className="card-desc">View & edit submitted expenses</div>
+						</div>
+						<span className="arrow">&#8250;</span>
+					</button>
 				</div>
 			</div>
 		</>
