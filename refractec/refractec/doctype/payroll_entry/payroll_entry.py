@@ -17,7 +17,6 @@ MONTH_NAMES = [
 class PayrollEntry(Document):
 	def validate(self):
 		self.set_date_range()
-		self.validate_duplicate_payroll()
 		self.recalculate_totals()
 
 	def recalculate_totals(self):
@@ -35,23 +34,11 @@ class PayrollEntry(Document):
 		last_day = calendar.monthrange(self.payroll_year, month_number)[1]
 		self.to_date = f"{self.payroll_year}-{month_number:02d}-{last_day:02d}"
 
-	def validate_duplicate_payroll(self):
-		existing = frappe.db.exists("Payroll Entry", {
-			"project": self.project,
-			"payroll_month": self.payroll_month,
-			"payroll_year": self.payroll_year,
-			"docstatus": ["!=", 2],
-			"name": ["!=", self.name],
-		})
-		if existing:
-			frappe.throw(
-				f"Payroll for {self.project} for {self.payroll_month} {self.payroll_year} "
-				f"already exists: {existing}"
-			)
-
 	@frappe.whitelist()
 	def generate_payroll(self):
-		"""Pull attendance data and compute payroll for all assigned workers"""
+		"""Pull attendance data and compute payroll for all assigned workers.
+		Skips workers already included in other submitted payrolls for the same period.
+		"""
 		self.payroll_details = []
 
 		project = frappe.get_doc("Project", self.project)
@@ -61,7 +48,32 @@ class PayrollEntry(Document):
 			if row.is_active
 		}
 
+		# Find workers already processed in other submitted payrolls for this period
+		already_processed = set()
+		existing_payrolls = frappe.get_all(
+			"Payroll Entry",
+			filters={
+				"project": self.project,
+				"payroll_month": self.payroll_month,
+				"payroll_year": self.payroll_year,
+				"docstatus": 1,
+				"name": ["!=", self.name],
+			},
+			pluck="name",
+		)
+		for pe_name in existing_payrolls:
+			processed = frappe.get_all(
+				"Payroll Detail",
+				filters={"parent": pe_name},
+				pluck="worker",
+			)
+			already_processed.update(processed)
+
+		skipped = 0
 		for worker_id, assignment in workers.items():
+			if worker_id in already_processed:
+				skipped += 1
+				continue
 			attendance_data = frappe.db.sql(
 				"""
 				SELECT
@@ -135,10 +147,13 @@ class PayrollEntry(Document):
 		self.total_net_pay = sum(flt(r.net_pay) for r in self.payroll_details)
 		self.save()
 
-		frappe.msgprint(
-			f"Payroll generated with {len(self.payroll_details)} workers.",
-			indicator="green",
-		)
+		msg = f"Payroll generated with {len(self.payroll_details)} workers."
+		if skipped:
+			msg += f" ({skipped} workers skipped — already in another payroll for this period.)"
+		if len(self.payroll_details) == 0:
+			msg = "No workers left to process. All workers already have payroll for this period."
+
+		frappe.msgprint(msg, indicator="green" if self.payroll_details else "orange")
 
 	def on_submit(self):
 		self.recover_advances()
