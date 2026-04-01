@@ -316,6 +316,58 @@ function RecentActivity({ expenses, advances }) {
 }
 
 /* ─── Expense Chart (CSS-based stacked bars) ─── */
+function BarColumn({ month, types, monthData, colorMap, barHeight }) {
+	const [hovered, setHovered] = useState(null);
+	const total = types.reduce((s, t) => s + (monthData[t] || 0), 0);
+
+	return (
+		<div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+			{/* Tooltip — rendered outside overflow container */}
+			{hovered && (
+				<div style={{
+					position: "absolute", bottom: barHeight + 30, left: "50%", transform: "translateX(-50%)",
+					background: C.gray900, color: C.white, padding: "6px 10px", borderRadius: 6,
+					fontSize: 11, whiteSpace: "nowrap", zIndex: 10, pointerEvents: "none",
+					boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+				}}>
+					<div style={{ fontWeight: 600 }}>{hovered.type}</div>
+					<div>{fmtFull(hovered.value)}</div>
+					<div style={{
+						position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
+						width: 0, height: 0, borderLeft: "5px solid transparent",
+						borderRight: "5px solid transparent", borderTop: `5px solid ${C.gray900}`,
+					}} />
+				</div>
+			)}
+			{/* Value label */}
+			<div style={{ fontSize: 11, fontWeight: 600, color: C.gray600, marginBottom: 4 }}>
+				{fmt(total)}
+			</div>
+			{/* Stacked bar */}
+			<div style={{
+				width: "100%", maxWidth: 48, height: barHeight, borderRadius: "6px 6px 0 0",
+				display: "flex", flexDirection: "column-reverse", overflow: "hidden",
+			}}>
+				{types.map((t) => {
+					const val = monthData[t] || 0;
+					if (val === 0) return null;
+					const segH = (val / total) * barHeight;
+					return (
+						<div
+							key={t}
+							style={{ height: segH, background: colorMap[t], cursor: "pointer" }}
+							onMouseEnter={() => setHovered({ type: t, value: val })}
+							onMouseLeave={() => setHovered(null)}
+						/>
+					);
+				})}
+			</div>
+			{/* Month label */}
+			<div style={{ fontSize: 11, color: C.gray500, marginTop: 6, textAlign: "center" }}>{month}</div>
+		</div>
+	);
+}
+
 function ExpenseChart({ chart }) {
 	if (!chart || !chart.months || chart.months.length === 0) {
 		return null;
@@ -355,28 +407,11 @@ function ExpenseChart({ chart }) {
 					const monthData = chartData[m] || {};
 					const total = types.reduce((s, t) => s + (monthData[t] || 0), 0);
 					const barHeight = (total / maxTotal) * 180;
-
 					return (
-						<div key={m} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-							{/* Value label */}
-							<div style={{ fontSize: 11, fontWeight: 600, color: C.gray600, marginBottom: 4 }}>
-								{fmt(total)}
-							</div>
-							{/* Stacked bar */}
-							<div style={{
-								width: "100%", maxWidth: 48, height: barHeight, borderRadius: "6px 6px 0 0",
-								display: "flex", flexDirection: "column-reverse", overflow: "hidden",
-							}}>
-								{types.map((t) => {
-									const val = monthData[t] || 0;
-									if (val === 0) return null;
-									const segH = (val / total) * barHeight;
-									return <div key={t} style={{ height: segH, background: colorMap[t] }} />;
-								})}
-							</div>
-							{/* Month label */}
-							<div style={{ fontSize: 11, color: C.gray500, marginTop: 6, textAlign: "center" }}>{m}</div>
-						</div>
+						<BarColumn
+							key={m} month={m} types={types}
+							monthData={monthData} colorMap={colorMap} barHeight={barHeight}
+						/>
 					);
 				})}
 			</div>
