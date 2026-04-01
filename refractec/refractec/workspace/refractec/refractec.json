@@ -1,4 +1,5 @@
 {
+ "app": "Refractec",
  "charts": [
   {
    "chart_name": "Budget Utilization by Project",
@@ -9,8 +10,8 @@
    "label": "Expense Type Distribution"
   }
  ],
- "content": "[{\"id\":\"shortcut_section\",\"type\":\"header\",\"data\":{\"text\":\"Quick Actions\",\"col\":12}},{\"id\":\"shortcut_row\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Daily Attendance\",\"col\":3}},{\"id\":\"shortcut_row2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Worker Advance\",\"col\":3}},{\"id\":\"shortcut_row3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Expense Entry\",\"col\":3}},{\"id\":\"shortcut_payroll\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Payroll Entry\",\"col\":3}},{\"id\":\"shortcut_row4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Projects\",\"col\":3}},{\"id\":\"card_section\",\"type\":\"header\",\"data\":{\"text\":\"Overview\",\"col\":12}},{\"id\":\"nc1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Projects\",\"col\":4}},{\"id\":\"nc2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Expense Approvals\",\"col\":4}},{\"id\":\"nc3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Workers\",\"col\":4}},{\"id\":\"chart_section\",\"type\":\"header\",\"data\":{\"text\":\"Analytics\",\"col\":12}},{\"id\":\"chart1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Budget Utilization by Project\",\"col\":6}},{\"id\":\"chart2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Expense Type Distribution\",\"col\":6}},{\"id\":\"report_section\",\"type\":\"header\",\"data\":{\"text\":\"Reports\",\"col\":12}},{\"id\":\"report_link1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project Cost Summary\",\"col\":4}},{\"id\":\"report_link2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Budget vs Actual\",\"col\":4}},{\"id\":\"report_link3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Cost Projection\",\"col\":4}},{\"id\":\"master_section\",\"type\":\"header\",\"data\":{\"text\":\"Masters\",\"col\":12}},{\"id\":\"master_link1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workers\",\"col\":3}},{\"id\":\"master_link2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Expense Types\",\"col\":3}},{\"id\":\"master_link3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Profiles\",\"col\":3}},{\"id\":\"master_link4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Refractec Settings\",\"col\":3}}]",
- "creation": "2026-03-17 12:00:00.000000",
+ "content": "[{\"id\":\"shortcut_section\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Quick Actions</span>\",\"col\":12}},{\"id\":\"shortcut_row\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Daily Attendance\",\"col\":3}},{\"id\":\"shortcut_row2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Worker Advance\",\"col\":3}},{\"id\":\"shortcut_payroll\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Payroll Entry\",\"col\":3}},{\"id\":\"shortcut_row3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Expense Entry\",\"col\":3}},{\"id\":\"shortcut_row4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Projects\",\"col\":3}},{\"id\":\"card_section\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Overview</span>\",\"col\":12}},{\"id\":\"nc1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Projects\",\"col\":4}},{\"id\":\"nc2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Expense Approvals\",\"col\":4}},{\"id\":\"nc3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Workers\",\"col\":4}},{\"id\":\"chart_section\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"chart1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Budget Utilization by Project\",\"col\":6}},{\"id\":\"chart2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Expense Type Distribution\",\"col\":6}},{\"id\":\"report_section\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reports</span>\",\"col\":12}},{\"id\":\"report_link1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project Cost Summary\",\"col\":4}},{\"id\":\"report_link2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Budget vs Actual\",\"col\":4}},{\"id\":\"report_link3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Cost Projection\",\"col\":4}},{\"id\":\"master_section\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Masters</span>\",\"col\":12}},{\"id\":\"master_link1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Workers\",\"col\":3}},{\"id\":\"master_link2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Expense Types\",\"col\":3}},{\"id\":\"master_link3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Profiles\",\"col\":3}},{\"id\":\"master_link4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Refractec Settings\",\"col\":3}}]",
+ "creation": "2026-03-17 12:00:00",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -20,265 +21,19 @@
  "idx": 0,
  "is_hidden": 0,
  "label": "Refractec",
- "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Masters",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Worker",
-   "link_count": 0,
-   "link_to": "Worker",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Expense Type",
-   "link_count": 0,
-   "link_to": "Expense Type",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project Configuration Profile",
-   "link_count": 0,
-   "link_to": "Project Configuration Profile",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Project",
-   "link_count": 0,
-   "link_to": "Project",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Transactions",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Daily Attendance",
-   "link_count": 0,
-   "link_to": "Daily Attendance",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Worker Advance",
-   "link_count": 0,
-   "link_to": "Worker Advance",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Expense Entry",
-   "link_count": 0,
-   "link_to": "Expense Entry",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Payroll Entry",
-   "link_count": 0,
-   "link_to": "Payroll Entry",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Advance Ledger Entry",
-   "link_count": 0,
-   "link_to": "Advance Ledger Entry",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Cost Summary",
-   "link_count": 0,
-   "link_to": "Project Cost Summary",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Project Wise Daily Cost",
-   "link_count": 0,
-   "link_to": "Project Wise Daily Cost",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Worker Wise Attendance Summary",
-   "link_count": 0,
-   "link_to": "Worker Wise Attendance Summary",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Worker Wise Advance Balance",
-   "link_count": 0,
-   "link_to": "Worker Wise Advance Balance",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Expense Analysis",
-   "link_count": 0,
-   "link_to": "Expense Analysis",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Payroll Summary",
-   "link_count": 0,
-   "link_to": "Payroll Summary",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Budget vs Actual",
-   "link_count": 0,
-   "link_to": "Budget vs Actual",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Cost Projection",
-   "link_count": 0,
-   "link_to": "Cost Projection",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Attendance Compliance",
-   "link_count": 0,
-   "link_to": "Attendance Compliance",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Advance Reconciliation",
-   "link_count": 0,
-   "link_to": "Advance Reconciliation",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Settings",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Refractec Settings",
-   "link_count": 0,
-   "link_to": "Refractec Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  }
- ],
- "modified": "2026-03-17 12:00:00.000000",
- "modified_by": "Administrator",
+ "links": [],
+ "modified": "2026-04-01 13:30:40.176659",
+ "modified_by": "rpruchitpatel14@gmail.com",
  "module": "Refractec",
  "name": "Refractec",
- "number_cards": [
-  {
-   "number_card_name": "Active Projects"
-  },
-  {
-   "number_card_name": "Pending Expense Approvals"
-  },
-  {
-   "number_card_name": "Active Workers"
-  }
- ],
+ "number_cards": [],
  "owner": "Administrator",
- "parent_page": "",
+ "parent_page": "Refractec",
  "public": 1,
+ "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 1,
+ "sequence_id": 1.0,
  "shortcuts": [
   {
    "color": "Blue",
@@ -302,17 +57,16 @@
    "type": "DocType"
   },
   {
-   "color": "Yellow",
-   "doc_view": "List",
-   "label": "New Payroll Entry",
-   "link_to": "Payroll Entry",
-   "type": "DocType"
-  },
-  {
    "color": "Grey",
    "doc_view": "List",
    "label": "Projects",
    "link_to": "Project",
+   "type": "DocType"
+  },
+  {
+   "color": "grey",
+   "label": "New Payroll Entry",
+   "link_to": "Payroll Entry",
    "type": "DocType"
   },
   {
@@ -347,20 +101,24 @@
    "color": "Grey",
    "label": "Project Cost Summary",
    "link_to": "Project Cost Summary",
+   "report_ref_doctype": "Project",
    "type": "Report"
   },
   {
    "color": "Grey",
    "label": "Budget vs Actual",
    "link_to": "Budget vs Actual",
+   "report_ref_doctype": "Project",
    "type": "Report"
   },
   {
    "color": "Grey",
    "label": "Cost Projection",
    "link_to": "Cost Projection",
+   "report_ref_doctype": "Project",
    "type": "Report"
   }
  ],
- "title": "Refractec"
+ "title": "Refractec",
+ "type": "Workspace"
 }

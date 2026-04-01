@@ -351,6 +351,194 @@ def get_expense_types():
 	)
 
 
+# --- Admin Dashboard ---
+
+
+@frappe.whitelist()
+def get_admin_dashboard_data():
+	"""Return all data needed for the admin dashboard."""
+	from frappe.utils import add_months
+
+	now = getdate()
+	today_date = today()
+
+	# --- Summary cards ---
+	active_workers = frappe.db.count("Worker", {"status": "Active"})
+	active_projects = frappe.db.count("Project", {"status": ["in", ["Open", "In Progress"]]})
+
+	todays_ot = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(ad.overtime_hours), 0)
+		FROM `tabAttendance Detail` ad
+		JOIN `tabDaily Attendance` da ON da.name = ad.parent
+		WHERE da.attendance_date = %s AND da.docstatus = 1
+	""", today_date)[0][0])
+
+	pending_approvals = frappe.db.count("Expense Entry", {
+		"docstatus": 1,
+		"approval_status": ["in", ["Pending", "Pending Approval"]],
+	})
+
+	month_names = [
+		"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December",
+	]
+	payroll_month = month_names[now.month - 1]
+	payroll_this_month = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(total_net_pay), 0) FROM `tabPayroll Entry`
+		WHERE payroll_month = %s AND payroll_year = %s AND docstatus = 1
+	""", (payroll_month, now.year))[0][0])
+
+	outstanding_advances = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(amount - recovered_amount), 0) FROM `tabWorker Advance`
+		WHERE docstatus = 1 AND recovery_status != 'Fully Recovered'
+	""")[0][0])
+
+	# --- Projects ---
+	projects = frappe.get_all("Project",
+		filters={"status": ["in", ["Open", "In Progress"]]},
+		fields=[
+			"name", "project_name", "status", "project_budget",
+			"total_cost", "total_labor_cost", "total_expense_cost",
+			"budget_utilization_pct", "budget_variance",
+			"start_date", "expected_end_date",
+			"total_advance_given", "total_advance_recovered",
+		],
+		order_by="project_name asc",
+	)
+
+	for p in projects:
+		assignments = frappe.get_all("Project Worker Assignment",
+			filters={"parent": p.name, "is_active": 1},
+			fields=["worker_type"])
+		p.total_workers = len(assignments)
+		p.supervisors = sum(1 for a in assignments if a.worker_type == "Supervisor")
+		p.workers = p.total_workers - p.supervisors
+
+		p.todays_ot = flt(frappe.db.sql("""
+			SELECT COALESCE(SUM(ad.overtime_hours), 0)
+			FROM `tabAttendance Detail` ad
+			JOIN `tabDaily Attendance` da ON da.name = ad.parent
+			WHERE da.project = %s AND da.attendance_date = %s AND da.docstatus = 1
+		""", (p.name, today_date))[0][0])
+
+		p.expenses_this_month = flt(frappe.db.sql("""
+			SELECT COALESCE(SUM(amount), 0) FROM `tabExpense Entry`
+			WHERE project = %s AND docstatus = 1
+			AND MONTH(expense_date) = %s AND YEAR(expense_date) = %s
+		""", (p.name, now.month, now.year))[0][0])
+
+		if flt(p.budget_utilization_pct) >= 100:
+			p.health = "Over Budget"
+		elif flt(p.budget_utilization_pct) >= 80:
+			p.health = "At Risk"
+		else:
+			p.health = "On Track"
+
+	# --- Alerts ---
+	alerts = []
+
+	for p in projects:
+		if p.health == "Over Budget":
+			alerts.append({
+				"type": "danger",
+				"title": f"{p.project_name} — Budget Exceeded",
+				"message": f"Utilized {flt(p.budget_utilization_pct):.0f}% of ₹{flt(p.project_budget):,.0f} budget",
+				"link": f"/app/project/{p.name}",
+			})
+
+	if pending_approvals > 0:
+		pending_amount = flt(frappe.db.sql("""
+			SELECT COALESCE(SUM(amount), 0) FROM `tabExpense Entry`
+			WHERE docstatus = 1 AND approval_status IN ('Pending', 'Pending Approval')
+		""")[0][0])
+		alerts.append({
+			"type": "warning",
+			"title": "Pending Expense Approvals",
+			"message": f"{pending_approvals} expense(s) totaling ₹{pending_amount:,.0f} awaiting approval",
+			"link": "/app/expense-entry?approval_status=Pending+Approval",
+		})
+
+	# Attendance compliance — missing today
+	projects_with_attendance = frappe.get_all("Daily Attendance",
+		filters={"attendance_date": today_date, "docstatus": 1},
+		pluck="project")
+	for p in projects:
+		if p.name not in projects_with_attendance and p.status == "In Progress":
+			alerts.append({
+				"type": "info",
+				"title": f"{p.project_name} — Attendance Missing",
+				"message": "Today's attendance has not been submitted yet",
+				"link": f"/app/daily-attendance?project={p.name}",
+			})
+
+	# --- Expense analytics (last 6 months) ---
+	six_months_ago = add_months(today_date, -6)
+	expense_rows = frappe.db.sql("""
+		SELECT
+			DATE_FORMAT(ee.expense_date, '%%b %%Y') as month_label,
+			DATE_FORMAT(ee.expense_date, '%%Y-%%m') as month_key,
+			et.expense_type_name as expense_type,
+			SUM(ee.amount) as total
+		FROM `tabExpense Entry` ee
+		JOIN `tabExpense Type` et ON ee.expense_type = et.name
+		WHERE ee.docstatus = 1 AND ee.expense_date >= %s
+		GROUP BY month_key, month_label, et.expense_type_name
+		ORDER BY month_key
+	""", six_months_ago, as_dict=True)
+
+	months_order = []
+	expense_types = set()
+	expense_by_month = {}
+	for row in expense_rows:
+		if row.month_key not in expense_by_month:
+			expense_by_month[row.month_key] = {"label": row.month_label, "data": {}}
+			months_order.append(row.month_key)
+		expense_by_month[row.month_key]["data"][row.expense_type] = flt(row.total)
+		expense_types.add(row.expense_type)
+
+	expense_chart = {
+		"months": [expense_by_month[m]["label"] for m in months_order],
+		"types": sorted(list(expense_types)),
+		"data": {expense_by_month[m]["label"]: expense_by_month[m]["data"] for m in months_order},
+	}
+
+	# --- Worker distribution ---
+	worker_by_project = [
+		{"project_name": p.project_name, "count": p.total_workers}
+		for p in projects
+	]
+
+	# --- Recent activities ---
+	recent_expenses = frappe.get_all("Expense Entry",
+		filters={"docstatus": 1},
+		fields=["name", "project", "amount", "submitted_by_name", "posting_date", "approval_status", "expense_type"],
+		order_by="creation desc",
+		limit=5)
+
+	recent_advances = frappe.get_all("Worker Advance",
+		filters={"docstatus": 1},
+		fields=["name", "project", "worker_name", "amount", "advance_date"],
+		order_by="creation desc",
+		limit=5)
+
+	return {
+		"summary": {
+			"active_workers": active_workers,
+			"active_projects": active_projects,
+			"todays_ot_hours": todays_ot,
+			"pending_approvals": pending_approvals,
+			"payroll_this_month": payroll_this_month,
+			"outstanding_advances": outstanding_advances,
+		},
+		"alerts": alerts,
+		"projects": projects,
+		"expense_chart": expense_chart,
+		"worker_by_project": worker_by_project,
+		"recent_expenses": recent_expenses,
+		"recent_advances": recent_advances,
+	}
+
+
 # --- Helper functions ---
 
 
