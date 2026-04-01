@@ -177,9 +177,92 @@ class PayrollEntry(Document):
 
 	def on_submit(self):
 		self.recover_advances()
+		self.generate_salary_slips()
 
 	def on_cancel(self):
 		self.reverse_advance_recovery()
+		self.delete_salary_slips()
+
+	def generate_salary_slips(self):
+		"""Create individual Salary Slip for each worker in this payroll."""
+		# Build per-worker earnings and deductions from parent tables
+		worker_earnings = {}
+		for row in (self.earnings or []):
+			worker_earnings.setdefault(row.worker, []).append({
+				"salary_component": row.salary_component,
+				"amount": flt(row.amount),
+			})
+
+		worker_deductions = {}
+		for row in (self.deductions or []):
+			worker_deductions.setdefault(row.worker, []).append({
+				"salary_component": row.salary_component,
+				"amount": flt(row.amount),
+			})
+
+		for row in self.payroll_details:
+			total_all_deductions = (
+				flt(row.advance_deduction)
+				+ flt(row.total_deductions)
+				+ flt(row.other_deductions)
+			)
+
+			slip = frappe.get_doc({
+				"doctype": "Salary Slip",
+				"payroll_entry": self.name,
+				"project": self.project,
+				"worker": row.worker,
+				"worker_name": row.worker_name,
+				"employee_name": row.worker_name,
+				"worker_type": row.worker_type,
+				"payroll_month": self.payroll_month,
+				"payroll_year": self.payroll_year,
+				"from_date": self.from_date,
+				"to_date": self.to_date,
+				"total_present_days": row.total_present_days,
+				"total_overtime_hours": row.total_overtime_hours,
+				"daily_wage_rate": row.daily_wage_rate,
+				"overtime_hourly_rate": row.overtime_hourly_rate,
+				"gross_wage": row.gross_wage,
+				"overtime_amount": row.overtime_amount,
+				"total_earnings": flt(row.total_earnings),
+				"gross_pay": row.gross_pay,
+				"advance_deduction": row.advance_deduction,
+				"total_deductions": flt(row.total_deductions),
+				"other_deductions": flt(row.other_deductions),
+				"total_all_deductions": total_all_deductions,
+				"net_pay": row.net_pay,
+				"slip_earnings": [
+					{"salary_component": e["salary_component"], "amount": e["amount"]}
+					for e in worker_earnings.get(row.worker, [])
+				],
+				"slip_deductions": [
+					{"salary_component": d["salary_component"], "amount": d["amount"]}
+					for d in worker_deductions.get(row.worker, [])
+				],
+			})
+			slip.insert(ignore_permissions=True)
+
+		frappe.msgprint(
+			f"{len(self.payroll_details)} Salary Slip(s) generated.",
+			indicator="green",
+		)
+
+	def delete_salary_slips(self):
+		"""Delete all Salary Slips generated from this Payroll Entry."""
+		slips = frappe.get_all(
+			"Salary Slip",
+			filters={"payroll_entry": self.name},
+			pluck="name",
+		)
+		for slip_name in slips:
+			frappe.delete_doc("Salary Slip", slip_name, force=True, ignore_permissions=True)
+
+		if slips:
+			frappe.msgprint(
+				f"{len(slips)} Salary Slip(s) deleted.",
+				indicator="orange",
+			)
 
 	def recover_advances(self):
 		for row in self.payroll_details:

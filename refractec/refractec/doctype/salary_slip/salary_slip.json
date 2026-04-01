@@ -1,0 +1,318 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-04-01 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "payroll_entry",
+  "project",
+  "project_name",
+  "column_break_header",
+  "employee_name",
+  "worker",
+  "worker_name",
+  "worker_type",
+  "payroll_month",
+  "payroll_year",
+  "section_break_period",
+  "from_date",
+  "to_date",
+  "column_break_period",
+  "total_present_days",
+  "total_overtime_hours",
+  "section_break_wage",
+  "daily_wage_rate",
+  "overtime_hourly_rate",
+  "column_break_wage",
+  "gross_wage",
+  "overtime_amount",
+  "section_break_earnings",
+  "slip_earnings",
+  "section_break_gross",
+  "total_earnings",
+  "gross_pay",
+  "section_break_deductions",
+  "slip_deductions",
+  "section_break_deduction_summary",
+  "advance_deduction",
+  "total_deductions",
+  "column_break_deduction_summary",
+  "other_deductions",
+  "total_all_deductions",
+  "section_break_net",
+  "net_pay"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "SAL-.YYYY.-.#####",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "payroll_entry",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Payroll Entry",
+   "options": "Payroll Entry",
+   "description": "Leave blank for manual salary slip"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fetch_from": "project.project_name",
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_header",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "in_list_view": 1,
+   "description": "For manual slips — type name directly (no worker record needed)",
+   "depends_on": "eval:!doc.worker"
+  },
+  {
+   "fieldname": "worker",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Worker",
+   "options": "Worker",
+   "description": "Optional — link to a registered worker"
+  },
+  {
+   "fetch_from": "worker.worker_name",
+   "fieldname": "worker_name",
+   "fieldtype": "Data",
+   "label": "Worker Name",
+   "read_only": 1,
+   "depends_on": "eval:doc.worker"
+  },
+  {
+   "fieldname": "worker_type",
+   "fieldtype": "Data",
+   "label": "Designation / Type"
+  },
+  {
+   "fieldname": "payroll_month",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payroll Month",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "payroll_year",
+   "fieldtype": "Int",
+   "label": "Payroll Year"
+  },
+  {
+   "fieldname": "section_break_period",
+   "fieldtype": "Section Break",
+   "label": "Attendance"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "column_break_period",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_present_days",
+   "fieldtype": "Float",
+   "label": "Days Worked"
+  },
+  {
+   "fieldname": "total_overtime_hours",
+   "fieldtype": "Float",
+   "label": "Overtime Hours"
+  },
+  {
+   "fieldname": "section_break_wage",
+   "fieldtype": "Section Break",
+   "label": "Wage Calculation"
+  },
+  {
+   "fieldname": "daily_wage_rate",
+   "fieldtype": "Currency",
+   "label": "Daily Wage Rate"
+  },
+  {
+   "fieldname": "overtime_hourly_rate",
+   "fieldtype": "Currency",
+   "label": "OT Hourly Rate"
+  },
+  {
+   "fieldname": "column_break_wage",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gross_wage",
+   "fieldtype": "Currency",
+   "label": "Gross Wage (Days x Rate)"
+  },
+  {
+   "fieldname": "overtime_amount",
+   "fieldtype": "Currency",
+   "label": "Overtime Amount"
+  },
+  {
+   "fieldname": "section_break_earnings",
+   "fieldtype": "Section Break",
+   "label": "Additional Earnings"
+  },
+  {
+   "fieldname": "slip_earnings",
+   "fieldtype": "Table",
+   "label": "Earnings",
+   "options": "Salary Slip Earning"
+  },
+  {
+   "fieldname": "section_break_gross",
+   "fieldtype": "Section Break",
+   "label": "Gross Pay"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_earnings",
+   "fieldtype": "Currency",
+   "label": "Total Additional Earnings",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_pay",
+   "fieldtype": "Currency",
+   "label": "Gross Pay",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "section_break_deductions",
+   "fieldtype": "Section Break",
+   "label": "Additional Deductions"
+  },
+  {
+   "fieldname": "slip_deductions",
+   "fieldtype": "Table",
+   "label": "Deductions",
+   "options": "Salary Slip Deduction"
+  },
+  {
+   "fieldname": "section_break_deduction_summary",
+   "fieldtype": "Section Break",
+   "label": "Deduction Summary"
+  },
+  {
+   "default": "0",
+   "fieldname": "advance_deduction",
+   "fieldtype": "Currency",
+   "label": "Advance Deduction"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_deductions",
+   "fieldtype": "Currency",
+   "label": "Total Additional Deductions",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_deduction_summary",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "other_deductions",
+   "fieldtype": "Currency",
+   "label": "Other Deductions"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_all_deductions",
+   "fieldtype": "Currency",
+   "label": "Total All Deductions",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "section_break_net",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "net_pay",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Net Pay",
+   "read_only": 1,
+   "bold": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-04-01 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Salary Slip",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Refractec Accountant",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Refractec Supervisor"
+  }
+ ],
+ "search_fields": "employee_name,worker,worker_name,project,payroll_month,payroll_year",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "title_field": "employee_name",
+ "track_changes": 0
+}

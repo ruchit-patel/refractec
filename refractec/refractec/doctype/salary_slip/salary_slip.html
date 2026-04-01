@@ -1,0 +1,449 @@
+{% macro curr(val) %}₹{{ "{:,.2f}".format((val or 0)|float) }}{% endmacro %}
+
+<style>
+	/* Reset Frappe print CSS that adds boxes around .label spans */
+	.payslip .label {
+		border: none !important;
+		padding: 0 !important;
+		background: none !important;
+		color: inherit !important;
+		font-size: inherit !important;
+		font-weight: inherit !important;
+		display: inline !important;
+		border-radius: 0 !important;
+	}
+	.payslip {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		max-width: 750px;
+		margin: 0 auto;
+		color: #1f2937;
+		font-size: 13px;
+		line-height: 1.5;
+	}
+
+	/* Header */
+	.payslip-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding-bottom: 12px;
+		border-bottom: 2px solid #d1d5db;
+		margin-bottom: 16px;
+	}
+	.payslip-header .company-name {
+		font-size: 22px;
+		font-weight: 700;
+		color: #111827;
+	}
+	.payslip-header .company-address {
+		font-size: 12px;
+		color: #6b7280;
+	}
+	.payslip-header .month-label {
+		text-align: right;
+		font-size: 12px;
+		color: #6b7280;
+	}
+	.payslip-header .month-value {
+		font-size: 18px;
+		font-weight: 700;
+		color: #111827;
+	}
+
+	/* Employee Summary */
+	.employee-section {
+		display: flex;
+		gap: 20px;
+		margin-bottom: 16px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid #e5e7eb;
+	}
+	.employee-details {
+		flex: 1.2;
+	}
+	.employee-details .section-label {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		color: #6b7280;
+		letter-spacing: 0.5px;
+		margin-bottom: 8px;
+	}
+	.detail-row {
+		display: flex;
+		margin-bottom: 4px;
+	}
+	.detail-row .label {
+		width: 140px;
+		color: #6b7280;
+		flex-shrink: 0;
+	}
+	.detail-row .colon {
+		width: 16px;
+		color: #9ca3af;
+	}
+	.detail-row .value {
+		font-weight: 500;
+		color: #111827;
+	}
+
+	/* Net Pay Box */
+	.net-pay-box {
+		flex: 0.8;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.net-pay-highlight {
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-left: 4px solid #16a34a;
+		border-radius: 6px;
+		padding: 16px 24px;
+		text-align: center;
+		width: 100%;
+		margin-bottom: 8px;
+	}
+	.net-pay-highlight .amount {
+		font-size: 26px;
+		font-weight: 700;
+		color: #111827;
+	}
+	.net-pay-highlight .label {
+		font-size: 12px;
+		color: #16a34a;
+		font-weight: 500;
+	}
+	.days-box {
+		width: 100%;
+		background: #f9fafb;
+		border: 1px solid #e5e7eb;
+		border-radius: 6px;
+		padding: 10px 16px;
+	}
+	.days-row {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 2px;
+	}
+	.days-row .label { color: #6b7280; }
+	.days-row .value { font-weight: 600; }
+
+	/* Earnings & Deductions Table */
+	.ed-section {
+		margin-bottom: 16px;
+	}
+	.ed-table {
+		width: 100%;
+		border-collapse: collapse;
+		border: 1px solid #e5e7eb;
+	}
+	.ed-table thead th {
+		background: #f9fafb;
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: #374151;
+		padding: 10px 12px;
+		border-bottom: 2px solid #d1d5db;
+		text-align: left;
+	}
+	.ed-table thead th.amount-col {
+		text-align: right;
+	}
+	.ed-table tbody td {
+		padding: 8px 12px;
+		border-bottom: 1px solid #f3f4f6;
+		vertical-align: top;
+	}
+	.ed-table tbody td.amount-col {
+		text-align: right;
+		font-weight: 600;
+	}
+	.ed-table .total-row td {
+		font-weight: 700;
+		border-top: 2px solid #d1d5db;
+		padding-top: 10px;
+		font-size: 13px;
+	}
+
+	/* Side by side earnings/deductions */
+	.ed-grid {
+		display: flex;
+		gap: 0;
+		border: 1px solid #e5e7eb;
+		border-radius: 6px;
+		overflow: hidden;
+		margin-bottom: 16px;
+	}
+	.ed-grid .ed-col {
+		flex: 1;
+	}
+	.ed-grid .ed-col:first-child {
+		border-right: 1px solid #e5e7eb;
+	}
+	.ed-grid .ed-col table {
+		width: 100%;
+		border-collapse: collapse;
+		border: none;
+	}
+	.ed-grid .ed-col table thead th {
+		background: #f9fafb;
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: #374151;
+		padding: 10px 12px;
+		border-bottom: 2px solid #d1d5db;
+		text-align: left;
+	}
+	.ed-grid .ed-col table thead th.amt {
+		text-align: right;
+	}
+	.ed-grid .ed-col table tbody td {
+		padding: 8px 12px;
+		border-bottom: 1px solid #f3f4f6;
+	}
+	.ed-grid .ed-col table tbody td.amt {
+		text-align: right;
+		font-weight: 600;
+	}
+	.ed-grid .ed-col table .total-row td {
+		font-weight: 700;
+		border-top: 2px solid #d1d5db;
+		background: #f9fafb;
+	}
+
+	/* Total Net Payable */
+	.total-net-box {
+		border: 1px solid #e5e7eb;
+		border-radius: 6px;
+		padding: 16px 20px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16px;
+		background: #f0fdf4;
+	}
+	.total-net-box .left .title {
+		font-size: 13px;
+		font-weight: 700;
+		text-transform: uppercase;
+		color: #111827;
+	}
+	.total-net-box .left .subtitle {
+		font-size: 11px;
+		color: #6b7280;
+	}
+	.total-net-box .net-amount {
+		font-size: 22px;
+		font-weight: 700;
+		color: #111827;
+	}
+
+	/* Amount in words */
+	.amount-words {
+		text-align: center;
+		font-size: 12px;
+		color: #6b7280;
+		margin-bottom: 20px;
+		font-style: italic;
+	}
+	.amount-words span { color: #111827; font-weight: 500; font-style: normal; }
+
+	/* Footer */
+	.payslip-footer {
+		text-align: center;
+		font-size: 10px;
+		color: #9ca3af;
+		padding-top: 12px;
+		border-top: 1px solid #e5e7eb;
+	}
+</style>
+
+<div class="payslip">
+	<!-- Header -->
+	<div class="payslip-header">
+		<div>
+			<div class="company-name">Refractec</div>
+			<div class="company-address">Construction Project Cost Management</div>
+		</div>
+		<div class="month-label">
+			Payslip For the Month<br>
+			<span class="month-value">{{ doc.payroll_month }} {{ doc.payroll_year }}</span>
+		</div>
+	</div>
+
+	<!-- Employee Summary + Net Pay -->
+	<div class="employee-section">
+		<div class="employee-details">
+			<div class="section-label">Employee Summary</div>
+			<div class="detail-row">
+				<span class="label">Employee Name</span>
+				<span class="colon">:</span>
+				<span class="value">{{ doc.employee_name or doc.worker_name }}</span>
+			</div>
+			{% if doc.worker_type %}
+			<div class="detail-row">
+				<span class="label">Designation</span>
+				<span class="colon">:</span>
+				<span class="value">{{ doc.worker_type }}</span>
+			</div>
+			{% endif %}
+			{% if doc.worker %}
+			<div class="detail-row">
+				<span class="label">Employee ID</span>
+				<span class="colon">:</span>
+				<span class="value">{{ doc.worker }}</span>
+			</div>
+			{% endif %}
+			{% if doc.project_name %}
+			<div class="detail-row">
+				<span class="label">Project</span>
+				<span class="colon">:</span>
+				<span class="value">{{ doc.project_name }}</span>
+			</div>
+			{% endif %}
+			<div class="detail-row">
+				<span class="label">Pay Period</span>
+				<span class="colon">:</span>
+				<span class="value">{{ doc.payroll_month }} {{ doc.payroll_year }}</span>
+			</div>
+			<div class="detail-row">
+				<span class="label">Pay Date</span>
+				<span class="colon">:</span>
+				<span class="value">{{ frappe.format_date(doc.to_date) }}</span>
+			</div>
+		</div>
+
+		<div class="net-pay-box">
+			<div class="net-pay-highlight">
+				<div class="amount">{{ curr(doc.net_pay) }}</div>
+				<div class="label">Employee Net Pay</div>
+			</div>
+			<div class="days-box">
+				<div class="days-row">
+					<span class="label">Paid Days</span>
+					<span class="value">: {{ doc.total_present_days }}</span>
+				</div>
+				<div class="days-row">
+					<span class="label">OT Hours</span>
+					<span class="value">: {{ doc.total_overtime_hours }}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Wage Info Row -->
+	<div style="display: flex; gap: 16px; margin-bottom: 16px; padding: 10px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;">
+		<div>
+			<span style="color: #6b7280;">Daily Wage Rate</span>
+			<span style="margin-left: 8px; font-weight: 600;">: {{ curr(doc.daily_wage_rate) }}</span>
+		</div>
+		<div style="margin-left: auto;">
+			<span style="color: #6b7280;">OT Hourly Rate</span>
+			<span style="margin-left: 8px; font-weight: 600;">: {{ curr(doc.overtime_hourly_rate) }}</span>
+		</div>
+	</div>
+
+	<!-- Earnings & Deductions Side by Side -->
+	<div class="ed-grid">
+		<!-- Earnings Column -->
+		<div class="ed-col">
+			<table>
+				<thead>
+					<tr>
+						<th>Earnings</th>
+						<th class="amt">Amount</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Basic Wage</td>
+						<td class="amt">{{ curr(doc.gross_wage) }}</td>
+					</tr>
+					{% if doc.overtime_amount %}
+					<tr>
+						<td>Overtime</td>
+						<td class="amt">{{ curr(doc.overtime_amount) }}</td>
+					</tr>
+					{% endif %}
+					{% for e in doc.slip_earnings %}
+					<tr>
+						<td>{{ e.salary_component }}</td>
+						<td class="amt">{{ curr(e.amount) }}</td>
+					</tr>
+					{% endfor %}
+					<tr class="total-row">
+						<td>Gross Earnings</td>
+						<td class="amt">{{ curr(doc.gross_pay) }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Deductions Column -->
+		<div class="ed-col">
+			<table>
+				<thead>
+					<tr>
+						<th>Deductions</th>
+						<th class="amt">Amount</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if doc.advance_deduction %}
+					<tr>
+						<td>Advance Recovery</td>
+						<td class="amt">{{ curr(doc.advance_deduction) }}</td>
+					</tr>
+					{% endif %}
+					{% for d in doc.slip_deductions %}
+					<tr>
+						<td>{{ d.salary_component }}</td>
+						<td class="amt">{{ curr(d.amount) }}</td>
+					</tr>
+					{% endfor %}
+					{% if doc.other_deductions %}
+					<tr>
+						<td>Other Deductions</td>
+						<td class="amt">{{ curr(doc.other_deductions) }}</td>
+					</tr>
+					{% endif %}
+					<!-- Empty rows to match earnings height -->
+					{% set earnings_count = 1 + (1 if doc.overtime_amount else 0) + (doc.slip_earnings|length) %}
+					{% set deductions_count = (1 if doc.advance_deduction else 0) + (doc.slip_deductions|length) + (1 if doc.other_deductions else 0) %}
+					{% for i in range(earnings_count - deductions_count) %}
+					<tr><td>&nbsp;</td><td></td></tr>
+					{% endfor %}
+					<tr class="total-row">
+						<td>Total Deductions</td>
+						<td class="amt">{{ curr(doc.total_all_deductions) }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Total Net Payable -->
+	<div class="total-net-box">
+		<div class="left">
+			<div class="title">Total Net Payable</div>
+			<div class="subtitle">Gross Earnings - Total Deductions</div>
+		</div>
+		<div class="net-amount">{{ curr(doc.net_pay) }}</div>
+	</div>
+
+	<!-- Amount in Words -->
+	<div class="amount-words">
+		Amount In Words : <span>{{ frappe.utils.money_in_words(doc.net_pay or 0, "INR") }}</span>
+	</div>
+
+	<!-- Footer -->
+	<div class="payslip-footer">
+		-- This document has been automatically generated by Refractec Payroll; therefore, a signature is not required. --
+		<br>{{ doc.name }} &middot; {{ doc.payroll_entry }}
+	</div>
+</div>

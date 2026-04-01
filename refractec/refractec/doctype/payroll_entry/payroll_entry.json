@@ -176,8 +176,14 @@
   }
  ],
  "is_submittable": 1,
- "links": [],
- "modified": "2026-03-16 12:00:00.000000",
+ "links": [
+  {
+   "group": "Salary Slips",
+   "link_doctype": "Salary Slip",
+   "link_fieldname": "payroll_entry"
+  }
+ ],
+ "modified": "2026-04-01 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Refractec",
  "name": "Payroll Entry",

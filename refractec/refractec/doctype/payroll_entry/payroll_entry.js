@@ -11,6 +11,13 @@ frappe.ui.form.on("Payroll Entry", {
 		}
 		frm.trigger("toggle_generate_button");
 		frm.trigger("setup_component_filters");
+
+		// Show "View Salary Slips" button on submitted payroll
+		if (frm.doc.docstatus === 1) {
+			frm.add_custom_button(__("View Salary Slips"), function () {
+				frappe.set_route("List", "Salary Slip", { payroll_entry: frm.doc.name });
+			});
+		}
 	},
 	project(frm) {
 		frm.trigger("toggle_generate_button");
