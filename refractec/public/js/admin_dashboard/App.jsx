@@ -422,12 +422,12 @@ function ExpenseChart({ chart }) {
 /* ─── Quick Reports ─── */
 function QuickReports() {
 	const reports = [
-		{ label: "Daily Expense Summary", route: "/app/query-report/Daily Expense Summary", icon: "file-text", color: C.primary },
-		{ label: "Budget vs Actual Report", route: "/app/query-report/Budget vs Actual Report", icon: "bar-chart-2", color: C.success },
-		{ label: "Worker Advance Report", route: "/app/query-report/Worker Advance Report", icon: "dollar-sign", color: C.warning },
-		{ label: "Monthly Payroll Summary", route: "/app/query-report/Monthly Payroll Summary", icon: "credit-card", color: C.info },
-		{ label: "Pending Approvals", route: "/app/query-report/Pending Approvals", icon: "alert-circle", color: C.danger },
-		{ label: "Project Expense Report", route: "/app/query-report/Project Expense Report", icon: "pie-chart", color: "#7c3aed" },
+		{ label: "Expense Analysis", route: "/app/query-report/Expense Analysis", icon: "file-text", color: C.primary },
+		{ label: "Budget vs Actual", route: "/app/query-report/Budget vs Actual", icon: "bar-chart-2", color: C.success },
+		{ label: "Worker Wise Advance Balance", route: "/app/query-report/Worker Wise Advance Balance", icon: "dollar-sign", color: C.warning },
+		{ label: "Payroll Summary", route: "/app/query-report/Payroll Summary", icon: "credit-card", color: C.info },
+		{ label: "Attendance Compliance", route: "/app/query-report/Attendance Compliance", icon: "alert-circle", color: C.danger },
+		{ label: "Project Cost Summary", route: "/app/query-report/Project Cost Summary", icon: "pie-chart", color: "#7c3aed" },
 	];
 
 	return (
