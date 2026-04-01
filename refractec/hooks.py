@@ -51,3 +51,6 @@ ignore_links_on_delete = ["Advance Ledger Entry"]
 auto_cancel_exempted_doctypes = ["Advance Ledger Entry"]
 
 website_route_rules = [{'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]
+
+# Boot session — hide non-Refractec desktop icons for Refractec-only users
+boot_session = "refractec.boot.boot_session"

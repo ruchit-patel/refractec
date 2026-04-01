@@ -1,0 +1,20 @@
+{
+ "app": "refractec",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon_type": "Link",
+ "idx": 0,
+ "label": "Refractec",
+ "link_to": "Refractec",
+ "link_type": "Workspace Sidebar",
+ "modified_by": "Administrator",
+ "name": "Refractec",
+ "owner": "Administrator",
+ "roles": [
+  {"role": "Refractec Admin"},
+  {"role": "Refractec Supervisor"},
+  {"role": "Refractec Accountant"}
+ ],
+ "standard": 1
+}
