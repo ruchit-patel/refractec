@@ -301,9 +301,21 @@
    "link_type": "DocType",
    "show_arrow": 0,
    "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "bookmark",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Salary Slips",
+   "link_to": "Salary Slip",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-04-01 21:09:32.974366",
+ "modified": "2026-04-01 23:45:27.120551",
  "modified_by": "rpruchitpatel14@gmail.com",
  "module": "Refractec",
  "name": "Refractec",
