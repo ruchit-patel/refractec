@@ -11,6 +11,7 @@ class Project(Document):
 		self.validate_dates()
 		self.validate_duplicate_workers()
 		self.compute_budget_totals()
+		self.validate_fund_before_close()
 
 	def validate_dates(self):
 		if self.expected_end_date and self.expected_end_date < self.start_date:
@@ -38,3 +39,17 @@ class Project(Document):
 		self.fund_balance = flt(self.total_fund_given) - flt(self.total_fund_spent)
 		self.fund_cash_balance = flt(self.fund_cash_in) - flt(self.fund_cash_out)
 		self.fund_bank_balance = flt(self.fund_bank_in) - flt(self.fund_bank_out)
+
+	def validate_fund_before_close(self):
+		"""Block project closure if supervisor fund has outstanding balance."""
+		if self.status not in ("Completed", "Cancelled"):
+			return
+
+		balance = flt(self.fund_balance)
+		if balance > 0:
+			frappe.throw(
+				f"Cannot close project — supervisor fund has outstanding balance of "
+				f"₹{balance:,.2f} (Cash: ₹{flt(self.fund_cash_balance):,.2f}, "
+				f"Bank: ₹{flt(self.fund_bank_balance):,.2f}). "
+				f"Please create a Fund Return or Inter-Project Transfer first."
+			)
