@@ -104,18 +104,18 @@ function Error({ message, onRetry }) {
 /* ─── Summary Cards ─── */
 function SummaryCards({ summary }) {
 	const cards = [
-		{ label: "Active Workers", value: summary.active_workers, icon: "users", color: C.primary },
-		{ label: "Active Projects", value: summary.active_projects, icon: "grid", color: C.info },
-		{ label: "Today's OT Hours", value: `${summary.todays_ot_hours}h`, icon: "clock", color: C.warning },
-		{ label: "Pending Approvals", value: summary.pending_approvals, icon: "alert-circle", color: summary.pending_approvals > 0 ? C.danger : C.success },
-		{ label: "Payroll This Month", value: fmt(summary.payroll_this_month), icon: "credit-card", color: C.success },
-		{ label: "Outstanding Advances", value: fmt(summary.outstanding_advances), icon: "dollar-sign", color: summary.outstanding_advances > 0 ? C.warning : C.success },
+		{ label: "Active Workers", value: summary.active_workers, icon: "users", color: C.primary, route: "/app/worker?status=Active" },
+		{ label: "Active Projects", value: summary.active_projects, icon: "grid", color: C.info, route: "/app/project?status=%5B%22in%22%2C%5B%22Open%22%2C%22In+Progress%22%5D%5D" },
+		{ label: "Today's OT Hours", value: `${summary.todays_ot_hours}h`, icon: "clock", color: C.warning, route: "/app/daily-attendance?attendance_date=" + frappe.datetime.get_today() },
+		{ label: "Pending Approvals", value: summary.pending_approvals, icon: "alert-circle", color: summary.pending_approvals > 0 ? C.danger : C.success, route: "/app/expense-entry?approval_status=Pending+Approval" },
+		{ label: "Payroll This Month", value: fmt(summary.payroll_this_month), icon: "credit-card", color: C.success, route: "/app/payroll-entry" },
+		{ label: "Outstanding Advances", value: fmt(summary.outstanding_advances), icon: "dollar-sign", color: summary.outstanding_advances > 0 ? C.warning : C.success, route: "/app/worker-advance?recovery_status=%5B%22in%22%2C%5B%22Unrecovered%22%2C%22Partially+Recovered%22%5D%5D" },
 	];
 
 	return (
 		<div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16, marginBottom: 24 }}>
 			{cards.map((c, i) => (
-				<div key={i} style={cardStyle}>
+				<a key={i} href={c.route} style={{ ...cardStyle, textDecoration: "none", cursor: "pointer", transition: "box-shadow 0.15s" }}>
 					<div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
 						<div style={{
 							width: 36, height: 36, borderRadius: 8,
@@ -127,7 +127,7 @@ function SummaryCards({ summary }) {
 					</div>
 					<div style={{ fontSize: 22, fontWeight: 700, color: C.gray900 }}>{c.value}</div>
 					<div style={{ fontSize: 12, color: C.gray500, marginTop: 2 }}>{c.label}</div>
-				</div>
+				</a>
 			))}
 		</div>
 	);
