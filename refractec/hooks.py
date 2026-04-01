@@ -26,9 +26,16 @@ has_permission = {
 # Scheduled Tasks
 # ---------------
 scheduler_events = {
-	"daily": [
-		"refractec.refractec.tasks.check_attendance_compliance",
-	],
+	"cron": {
+		# Attendance reminder at 12 PM (midday nudge)
+		"0 12 * * *": [
+			"refractec.refractec.tasks.check_attendance_compliance",
+		],
+		# Deposit overdue check at 9 AM
+		"0 9 * * *": [
+			"refractec.refractec.tasks.check_overdue_deposits",
+		],
+	},
 }
 
 # Fixtures

@@ -568,6 +568,19 @@ def get_admin_dashboard_data():
 				"link": f"/app/daily-attendance?project={p.name}",
 			})
 
+	# Overdue deposits
+	overdue_deposits = frappe.get_all("Project Deposit",
+		filters={"status": ["in", ["Overdue", "Partially Collected"]]},
+		fields=["name", "company_authority", "deposit_type", "amount", "collected_amount", "days_overdue"])
+	if overdue_deposits:
+		total_dep_outstanding = sum(flt(d.amount) - flt(d.collected_amount) for d in overdue_deposits)
+		alerts.append({
+			"type": "danger",
+			"title": f"{len(overdue_deposits)} Deposit(s) Overdue",
+			"message": f"₹{total_dep_outstanding:,.0f} pending collection across {len(overdue_deposits)} deposit(s)",
+			"link": "/app/project-deposit?status=Overdue",
+		})
+
 	# --- Expense analytics (last 6 months) ---
 	six_months_ago = add_months(today_date, -6)
 	expense_rows = frappe.db.sql("""

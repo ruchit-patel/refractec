@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "autoname": "field:deposit_type_name",
+ "creation": "2026-04-01 21:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["deposit_type_name", "description"],
+ "fields": [
+  {
+   "fieldname": "deposit_type_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Deposit Type Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "links": [],
+ "modified": "2026-04-01 21:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Refractec",
+ "name": "Deposit Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Refractec Admin",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Refractec Accountant",
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "search_fields": "deposit_type_name",
+ "sort_field": "deposit_type_name",
+ "sort_order": "ASC",
+ "title_field": "deposit_type_name"
+}

@@ -340,6 +340,11 @@
    "group": "Fund",
    "link_doctype": "Supervisor Fund Transfer",
    "link_fieldname": "project"
+  },
+  {
+   "group": "Deposits",
+   "link_doctype": "Project Deposit",
+   "link_fieldname": "project"
   }
  ],
  "modified": "2026-03-16 12:00:00.000000",
