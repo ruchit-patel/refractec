@@ -841,6 +841,25 @@ def get_accountant_dashboard_data():
 			limit=10,
 		)
 
+	# ── Supervisor fund balances per project ──
+	fund_balances = frappe.get_all("Project",
+		filters={"status": ["in", ["Open", "In Progress"]]},
+		fields=[
+			"name", "project_name",
+			"total_fund_given", "total_fund_spent", "fund_balance",
+			"fund_cash_in", "fund_cash_out", "fund_cash_balance",
+			"fund_bank_in", "fund_bank_out", "fund_bank_balance",
+		],
+		order_by="project_name asc",
+	)
+	for fb in fund_balances:
+		sup = frappe.db.get_value(
+			"Project Worker Assignment",
+			{"parent": fb.name, "is_active": 1, "worker_type": "Supervisor"},
+			"worker_name",
+		)
+		fb.supervisor_name = sup or ""
+
 	# ── Recent transactions ──
 	recent_approved = frappe.get_all("Expense Entry",
 		filters={"docstatus": 1, "approval_status": ["in", ["Auto Approved", "Manually Approved"]]},
@@ -876,6 +895,7 @@ def get_accountant_dashboard_data():
 		"deposits": deposits,
 		"recent_approved": recent_approved,
 		"recent_payrolls": recent_payrolls,
+		"fund_balances": fund_balances,
 	}
 
 

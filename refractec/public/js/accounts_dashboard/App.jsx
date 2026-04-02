@@ -66,6 +66,10 @@ export function App({ onRefreshRef }) {
 			/>
 
 			{/* Main grid */}
+			{/* Fund Balances */}
+			<FundBalances projects={data.fund_balances} />
+
+			{/* Main grid */}
 			<div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 24, marginTop: 24 }}>
 				<div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 					<PayrollStatus entries={data.payroll_status} month={data.payroll_month} />
@@ -137,6 +141,62 @@ function SummaryCards({ summary }) {
 		</div>
 	);
 }
+
+/* ─── Fund Balances ─── */
+function FundBalances({ projects }) {
+	const hasFunds = projects.some((p) => flt(p.total_fund_given) > 0);
+	if (!hasFunds) return null;
+
+	return (
+		<div style={{ ...cardStyle, marginTop: 24 }}>
+			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+				<h3 style={sectionTitle}>Supervisor Fund Balance</h3>
+				<a href="/app/supervisor-fund-transfer" style={linkBtn}>Fund Transfers</a>
+			</div>
+			<div style={{ overflowX: "auto" }}>
+				<table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+					<thead>
+						<tr style={{ borderBottom: `2px solid ${C.gray200}` }}>
+							<th style={thStyle}>Project</th>
+							<th style={thStyle}>Supervisor</th>
+							<th style={{ ...thStyle, textAlign: "right" }}>Given</th>
+							<th style={{ ...thStyle, textAlign: "right" }}>Spent</th>
+							<th style={{ ...thStyle, textAlign: "right" }}>Cash</th>
+							<th style={{ ...thStyle, textAlign: "right" }}>Bank</th>
+							<th style={{ ...thStyle, textAlign: "right" }}>Balance</th>
+						</tr>
+					</thead>
+					<tbody>
+						{projects.filter((p) => flt(p.total_fund_given) > 0).map((p, i) => (
+							<tr key={i} style={{
+								borderBottom: `1px solid ${C.gray100}`,
+								cursor: "pointer",
+							}} onClick={() => frappe.set_route("Form", "Project", p.name)}>
+								<td style={tdStyle}>
+									<span style={{ fontWeight: 600, color: C.gray800 }}>{p.project_name}</span>
+								</td>
+								<td style={{ ...tdStyle, color: C.gray600 }}>{p.supervisor_name || "\u2014"}</td>
+								<td style={{ ...tdStyle, textAlign: "right", color: C.gray600 }}>{fmtFull(p.total_fund_given)}</td>
+								<td style={{ ...tdStyle, textAlign: "right", color: C.gray600 }}>{fmtFull(p.total_fund_spent)}</td>
+								<td style={{ ...tdStyle, textAlign: "right", fontWeight: 600, color: flt(p.fund_cash_balance) >= 0 ? C.gray800 : C.danger }}>
+									{fmtFull(p.fund_cash_balance)}
+								</td>
+								<td style={{ ...tdStyle, textAlign: "right", fontWeight: 600, color: flt(p.fund_bank_balance) >= 0 ? C.gray800 : C.danger }}>
+									{fmtFull(p.fund_bank_balance)}
+								</td>
+								<td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, color: flt(p.fund_balance) >= 0 ? C.success : C.danger }}>
+									{fmtFull(p.fund_balance)}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	);
+}
+
+function flt(v) { return Number(v || 0); }
 
 /* ─── Approval Queue ─── */
 function ApprovalQueue({ expenses, collapsed, onToggle, onAction }) {
@@ -611,4 +671,14 @@ const smallBtn = {
 	padding: "4px 12px", borderRadius: 6, border: "none",
 	fontWeight: 600, fontSize: 12, cursor: "pointer",
 	textDecoration: "none", display: "inline-block",
+};
+
+const thStyle = {
+	padding: "8px 12px", textAlign: "left", fontSize: 11,
+	fontWeight: 600, color: C.gray500, textTransform: "uppercase",
+	letterSpacing: "0.5px",
+};
+
+const tdStyle = {
+	padding: "10px 12px", fontSize: 13,
 };

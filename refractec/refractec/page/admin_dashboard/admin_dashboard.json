@@ -4,13 +4,23 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2026-04-01 12:48:03.260111",
+ "modified": "2026-04-02 13:20:01.227222",
  "modified_by": "Administrator",
  "module": "Refractec",
  "name": "admin_dashboard",
  "owner": "Administrator",
  "page_name": "admin_dashboard",
- "roles": [],
+ "roles": [
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "Refractec Admin"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
  "script": null,
  "standard": "Yes",
  "style": null,
