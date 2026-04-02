@@ -21,6 +21,18 @@
   {
    "child": 0,
    "collapsible": 1,
+   "icon": "accounting",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Accounts",
+   "link_to": "accounts_dashboard",
+   "link_type": "Page",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
    "label": "Transactions",
@@ -349,7 +361,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-04-02 00:19:50.003864",
+ "modified": "2026-04-02 07:35:00.000000",
  "modified_by": "rpruchitpatel14@gmail.com",
  "module": "Refractec",
  "name": "Refractec",

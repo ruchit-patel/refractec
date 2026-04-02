@@ -649,6 +649,236 @@ def get_admin_dashboard_data():
 	}
 
 
+# --- Accountant Dashboard ---
+
+
+@frappe.whitelist()
+def get_accountant_dashboard_data():
+	"""Return all data needed for the accountant dashboard."""
+	from frappe.utils import add_months
+
+	now = getdate()
+	today_date = today()
+	month_names = [
+		"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December",
+	]
+	payroll_month = month_names[now.month - 1]
+
+	# ── Summary cards ──
+	pending_approvals = frappe.db.count("Expense Entry", {
+		"docstatus": 1,
+		"approval_status": ["in", ["Pending", "Pending Approval"]],
+	})
+
+	flagged_expenses = frappe.db.count("Expense Entry", {
+		"docstatus": 1, "is_flagged": 1,
+		"approval_status": ["in", ["Pending", "Pending Approval"]],
+	})
+
+	payroll_this_month = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(total_net_pay), 0) FROM `tabPayroll Entry`
+		WHERE payroll_month = %s AND payroll_year = %s AND docstatus = 1
+	""", (payroll_month, now.year))[0][0])
+
+	total_expenses_month = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(amount), 0) FROM `tabExpense Entry`
+		WHERE docstatus = 1 AND MONTH(expense_date) = %s AND YEAR(expense_date) = %s
+	""", (now.month, now.year))[0][0])
+
+	outstanding_advances = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(amount - recovered_amount), 0) FROM `tabWorker Advance`
+		WHERE docstatus = 1 AND recovery_status != 'Fully Recovered'
+	""")[0][0])
+
+	total_advances_given = flt(frappe.db.sql("""
+		SELECT COALESCE(SUM(amount), 0) FROM `tabWorker Advance`
+		WHERE docstatus = 1
+	""")[0][0])
+
+	# ── Pending expense approvals (full list for action queue) ──
+	pending_expenses = frappe.get_all("Expense Entry",
+		filters={
+			"docstatus": 1,
+			"approval_status": ["in", ["Pending", "Pending Approval"]],
+		},
+		fields=[
+			"name", "project", "expense_type", "amount", "expense_date",
+			"submitted_by_name", "approval_status", "is_flagged", "flag_reason",
+			"bill_attachment", "description", "posting_date",
+		],
+		order_by="posting_date desc",
+		limit=20,
+	)
+	for e in pending_expenses:
+		e.expense_type_name = frappe.db.get_value(
+			"Expense Type", e.expense_type, "expense_type_name"
+		) or e.expense_type
+		e.project_name = frappe.db.get_value("Project", e.project, "project_name") or e.project
+
+	# ── Payroll status per project ──
+	active_projects = frappe.get_all("Project",
+		filters={"status": ["in", ["Open", "In Progress"]]},
+		fields=["name", "project_name"],
+		order_by="project_name asc",
+	)
+
+	payroll_status = []
+	for p in active_projects:
+		entry = frappe.get_all("Payroll Entry",
+			filters={
+				"project": p.name, "payroll_month": payroll_month,
+				"payroll_year": now.year, "docstatus": ["!=", 2],
+			},
+			fields=["name", "docstatus", "total_gross_pay", "total_advance_deduction", "total_net_pay"],
+			limit=1,
+		)
+		if entry:
+			e = entry[0]
+			payroll_status.append({
+				"project": p.name,
+				"project_name": p.project_name,
+				"payroll_name": e.name,
+				"status": "Submitted" if e.docstatus == 1 else "Draft",
+				"gross_pay": flt(e.total_gross_pay),
+				"deductions": flt(e.total_advance_deduction),
+				"net_pay": flt(e.total_net_pay),
+			})
+		else:
+			payroll_status.append({
+				"project": p.name,
+				"project_name": p.project_name,
+				"payroll_name": None,
+				"status": "Not Created",
+				"gross_pay": 0, "deductions": 0, "net_pay": 0,
+			})
+
+	# ── Advance recovery tracker ──
+	advance_by_worker = frappe.db.sql("""
+		SELECT
+			wa.worker, wa.worker_name,
+			SUM(wa.amount) as total_given,
+			SUM(wa.recovered_amount) as total_recovered,
+			SUM(wa.amount - wa.recovered_amount) as outstanding
+		FROM `tabWorker Advance` wa
+		WHERE wa.docstatus = 1 AND wa.recovery_status != 'Fully Recovered'
+		GROUP BY wa.worker, wa.worker_name
+		ORDER BY outstanding DESC
+		LIMIT 15
+	""", as_dict=True)
+
+	# ── Expense breakdown by type (this month) ──
+	expense_by_type = frappe.db.sql("""
+		SELECT et.expense_type_name as label, SUM(ee.amount) as value
+		FROM `tabExpense Entry` ee
+		JOIN `tabExpense Type` et ON ee.expense_type = et.name
+		WHERE ee.docstatus = 1
+		AND MONTH(ee.expense_date) = %s AND YEAR(ee.expense_date) = %s
+		GROUP BY et.expense_type_name
+		ORDER BY value DESC
+	""", (now.month, now.year), as_dict=True)
+
+	# ── Monthly cash flow (last 6 months) ──
+	six_months_ago = add_months(today_date, -6)
+	monthly_flow = frappe.db.sql("""
+		SELECT
+			DATE_FORMAT(from_date, '%%b %%Y') as month_label,
+			DATE_FORMAT(from_date, '%%Y-%%m') as month_key,
+			'payroll' as category,
+			SUM(total_net_pay) as amount
+		FROM `tabPayroll Entry`
+		WHERE docstatus = 1 AND from_date >= %s
+		GROUP BY month_key, month_label
+		UNION ALL
+		SELECT
+			DATE_FORMAT(expense_date, '%%b %%Y') as month_label,
+			DATE_FORMAT(expense_date, '%%Y-%%m') as month_key,
+			'expense' as category,
+			SUM(amount) as amount
+		FROM `tabExpense Entry`
+		WHERE docstatus = 1 AND expense_date >= %s
+		GROUP BY month_key, month_label
+		UNION ALL
+		SELECT
+			DATE_FORMAT(advance_date, '%%b %%Y') as month_label,
+			DATE_FORMAT(advance_date, '%%Y-%%m') as month_key,
+			'advance' as category,
+			SUM(amount) as amount
+		FROM `tabWorker Advance`
+		WHERE docstatus = 1 AND advance_date >= %s
+		GROUP BY month_key, month_label
+		ORDER BY month_key
+	""", (six_months_ago, six_months_ago, six_months_ago), as_dict=True)
+
+	# Pivot into chart-friendly format
+	flow_months = []
+	flow_data = {}
+	for row in monthly_flow:
+		if row.month_key not in flow_data:
+			flow_data[row.month_key] = {"label": row.month_label, "payroll": 0, "expense": 0, "advance": 0}
+			flow_months.append(row.month_key)
+		flow_data[row.month_key][row.category] = flt(row.amount)
+
+	cashflow_chart = {
+		"months": [flow_data[m]["label"] for m in flow_months],
+		"data": {flow_data[m]["label"]: {
+			"Payroll": flow_data[m]["payroll"],
+			"Expenses": flow_data[m]["expense"],
+			"Advances": flow_data[m]["advance"],
+		} for m in flow_months},
+	}
+
+	# ── Deposit tracking ──
+	deposits = []
+	if frappe.db.exists("DocType", "Project Deposit"):
+		deposits = frappe.get_all("Project Deposit",
+			filters={"status": ["in", ["Overdue", "Partially Collected", "Pending"]]},
+			fields=[
+				"name", "company_authority", "deposit_type", "amount",
+				"collected_amount", "due_date", "status", "days_overdue",
+			],
+			order_by="due_date asc",
+			limit=10,
+		)
+
+	# ── Recent transactions ──
+	recent_approved = frappe.get_all("Expense Entry",
+		filters={"docstatus": 1, "approval_status": ["in", ["Auto Approved", "Manually Approved"]]},
+		fields=["name", "amount", "submitted_by_name", "approval_status", "posting_date", "expense_type"],
+		order_by="creation desc",
+		limit=5,
+	)
+
+	recent_payrolls = frappe.get_all("Payroll Entry",
+		filters={"docstatus": 1},
+		fields=["name", "project", "payroll_month", "payroll_year", "total_net_pay"],
+		order_by="creation desc",
+		limit=5,
+	)
+	for p in recent_payrolls:
+		p.project_name = frappe.db.get_value("Project", p.project, "project_name") or p.project
+
+	return {
+		"summary": {
+			"pending_approvals": pending_approvals,
+			"flagged_expenses": flagged_expenses,
+			"payroll_this_month": payroll_this_month,
+			"total_expenses_month": total_expenses_month,
+			"outstanding_advances": outstanding_advances,
+			"total_advances_given": total_advances_given,
+		},
+		"pending_expenses": pending_expenses,
+		"payroll_status": payroll_status,
+		"payroll_month": f"{payroll_month} {now.year}",
+		"advance_by_worker": advance_by_worker,
+		"expense_by_type": expense_by_type,
+		"cashflow_chart": cashflow_chart,
+		"deposits": deposits,
+		"recent_approved": recent_approved,
+		"recent_payrolls": recent_payrolls,
+	}
+
+
 # --- Helper functions ---
 
 
