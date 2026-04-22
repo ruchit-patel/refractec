@@ -1,0 +1,22 @@
+# Bench environment (built fresh in Docker)
+env/
+logs/
+config/
+sites/
+*.pyc
+__pycache__
+node_modules/
+
+# App node_modules (rebuilt in Docker)
+apps/*/node_modules/
+apps/refractec/frontend/node_modules/
+
+# Git
+.git/
+apps/*/.git/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store

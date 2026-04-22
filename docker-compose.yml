@@ -1,0 +1,145 @@
+services:
+  # --- Infrastructure ---
+  mariadb:
+    image: mariadb:11.4
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis-cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-cache-data:/data
+
+  redis-queue:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-queue-data:/data
+
+  # --- Frappe Services ---
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: refractec:latest
+    restart: unless-stopped
+    command: web
+    environment:
+      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
+    env_file:
+      - .env
+    volumes:
+      - sites-data:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+
+  socketio:
+    image: refractec:latest
+    restart: unless-stopped
+    command: socketio
+    environment:
+      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
+    env_file:
+      - .env
+    volumes:
+      - sites-data:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      - backend
+
+  worker-default:
+    image: refractec:latest
+    restart: unless-stopped
+    command: worker-default
+    environment:
+      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
+    env_file:
+      - .env
+    volumes:
+      - sites-data:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      - backend
+
+  worker-short:
+    image: refractec:latest
+    restart: unless-stopped
+    command: worker-short
+    environment:
+      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
+    env_file:
+      - .env
+    volumes:
+      - sites-data:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      - backend
+
+  worker-long:
+    image: refractec:latest
+    restart: unless-stopped
+    command: worker-long
+    environment:
+      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
+    env_file:
+      - .env
+    volumes:
+      - sites-data:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      - backend
+
+  scheduler:
+    image: refractec:latest
+    restart: unless-stopped
+    command: scheduler
+    environment:
+      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
+    env_file:
+      - .env
+    volumes:
+      - sites-data:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      - backend
+
+  # --- Reverse Proxy ---
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - sites-data:/home/frappe/frappe-bench/sites:ro
+      - logs:/var/log/nginx
+    depends_on:
+      - backend
+      - socketio
+
+volumes:
+  mariadb-data:
+  redis-cache-data:
+  redis-queue-data:
+  sites-data:
+  logs:
