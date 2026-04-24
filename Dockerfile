@@ -80,8 +80,9 @@ COPY --from=assets-builder --chown=frappe:frappe /home/frappe/frappe-bench /home
 # Install bench CLI in production image
 RUN pip install --no-cache-dir frappe-bench
 
-# Copy entrypoint
+# Copy entrypoint and production WSGI wrapper
 COPY --chown=frappe:frappe docker/entrypoint.sh /entrypoint.sh
+COPY --chown=frappe:frappe docker/wsgi.py /home/frappe/frappe-bench/wsgi.py
 RUN chmod +x /entrypoint.sh
 
 # Install gosu for stepping down from root in entrypoint

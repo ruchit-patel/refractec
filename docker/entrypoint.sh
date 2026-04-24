@@ -97,8 +97,8 @@ case "$1" in
         --graceful-timeout 30 \
         --worker-tmp-dir /dev/shm \
         --preload \
-        --chdir "$BENCH_DIR/sites" \
-        frappe.app:application
+        --chdir "$BENCH_DIR" \
+        wsgi:application
     ;;
 
   socketio)
