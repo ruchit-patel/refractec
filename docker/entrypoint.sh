@@ -79,6 +79,7 @@ case "$1" in
     wait_for_db
     maybe_create_site
     echo "Starting Gunicorn on port 8000..."
+    export SITES_PATH="$BENCH_DIR/sites"
     exec gunicorn \
       --bind 0.0.0.0:8000 \
       --workers "${GUNICORN_WORKERS:-4}" \
@@ -86,6 +87,7 @@ case "$1" in
       --graceful-timeout 30 \
       --worker-tmp-dir /dev/shm \
       --preload \
+      --chdir "$BENCH_DIR/sites" \
       frappe.app:application
     ;;
 
