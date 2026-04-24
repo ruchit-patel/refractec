@@ -84,16 +84,17 @@ RUN pip install --no-cache-dir frappe-bench
 COPY --chown=frappe:frappe docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER frappe
-
-# Create required directories
-RUN mkdir -p logs config
-
 # Save built assets to a separate location so they survive volume mount
 # (the sites/ dir gets overlaid by a Docker volume at runtime)
 RUN cp -r sites/assets /home/frappe/frappe-bench/_built_assets \
     && cp sites/apps.json /home/frappe/frappe-bench/_built_assets/ \
-    && cp sites/apps.txt /home/frappe/frappe-bench/_built_assets/
+    && cp sites/apps.txt /home/frappe/frappe-bench/_built_assets/ \
+    && chown -R frappe:frappe /home/frappe/frappe-bench/_built_assets
+
+USER frappe
+
+# Create required directories
+RUN mkdir -p logs config
 
 # Generate default configs (will be overridden by entrypoint)
 RUN node -e "console.log('{}')" > sites/common_site_config.json
