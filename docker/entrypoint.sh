@@ -17,16 +17,6 @@ export PATH="$BENCH_DIR/env/bin:$PATH"
 # Ensure log directories exist (Frappe writes logs to ~/logs and bench/logs)
 mkdir -p "$BENCH_DIR/logs" "/home/frappe/logs"
 
-# Restore built assets into the sites volume (built at image build time,
-# but sites/ is a Docker volume that starts empty)
-if [ -d "$BENCH_DIR/_built_assets" ]; then
-  echo "Restoring built assets into sites volume..."
-  rm -rf "$BENCH_DIR/sites/assets"
-  cp -r "$BENCH_DIR/_built_assets" "$BENCH_DIR/sites/assets"
-  cp -f "$BENCH_DIR/_built_assets/apps.json" "$BENCH_DIR/sites/apps.json" 2>/dev/null || true
-  cp -f "$BENCH_DIR/_built_assets/apps.txt" "$BENCH_DIR/sites/apps.txt" 2>/dev/null || true
-fi
-
 # ---- Write common_site_config.json from env vars ----
 configure_common_site() {
   # Frappe needs currentsite.txt to resolve the site

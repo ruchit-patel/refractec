@@ -43,7 +43,7 @@ services:
     env_file:
       - .env
     volumes:
-      - sites-data:/home/frappe/frappe-bench/sites
+      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       mariadb:
@@ -62,7 +62,7 @@ services:
     env_file:
       - .env
     volumes:
-      - sites-data:/home/frappe/frappe-bench/sites
+      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       - backend
@@ -76,7 +76,7 @@ services:
     env_file:
       - .env
     volumes:
-      - sites-data:/home/frappe/frappe-bench/sites
+      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       - backend
@@ -90,7 +90,7 @@ services:
     env_file:
       - .env
     volumes:
-      - sites-data:/home/frappe/frappe-bench/sites
+      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       - backend
@@ -104,7 +104,7 @@ services:
     env_file:
       - .env
     volumes:
-      - sites-data:/home/frappe/frappe-bench/sites
+      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       - backend
@@ -118,7 +118,7 @@ services:
     env_file:
       - .env
     volumes:
-      - sites-data:/home/frappe/frappe-bench/sites
+      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       - backend
@@ -133,7 +133,6 @@ services:
       - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
     volumes:
       - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - sites-data:/home/frappe/frappe-bench/sites:ro
       - logs:/var/log/nginx
     depends_on:
       - backend
@@ -143,5 +142,5 @@ volumes:
   mariadb-data:
   redis-cache-data:
   redis-queue-data:
-  sites-data:
+  site-data:
   logs:
