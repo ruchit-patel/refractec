@@ -84,6 +84,9 @@ RUN pip install --no-cache-dir frappe-bench
 COPY --chown=frappe:frappe docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Install gosu for stepping down from root in entrypoint
+RUN apt-get update && apt-get install -y --no-install-recommends gosu && rm -rf /var/lib/apt/lists/*
+
 USER frappe
 
 # Create required directories
@@ -94,5 +97,7 @@ RUN node -e "console.log('{}')" > sites/common_site_config.json
 
 EXPOSE 8000 9000
 
+# Entrypoint runs as root to fix volume permissions, then drops to frappe
+USER root
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["web"]
