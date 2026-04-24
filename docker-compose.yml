@@ -1,3 +1,18 @@
+x-image: &image
+  image: refractec:latest
+  restart: unless-stopped
+
+x-depends-on-configurator: &depends_on_configurator
+  depends_on:
+    configurator:
+      condition: service_completed_successfully
+
+x-backend-defaults: &backend_defaults
+  <<: [*depends_on_configurator, *image]
+  volumes:
+    - sites:/home/frappe/frappe-bench/sites
+    - logs:/home/frappe/frappe-bench/logs
+
 services:
   # --- Infrastructure ---
   mariadb:
@@ -9,20 +24,19 @@ services:
       - --skip-character-set-client-handshake
       - --skip-innodb-read-only-compressed
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme}
+      MARIADB_AUTO_UPGRADE: 1
     volumes:
       - mariadb-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
 
   redis-cache:
     image: redis:7-alpine
     restart: unless-stopped
-    volumes:
-      - redis-cache-data:/data
 
   redis-queue:
     image: redis:7-alpine
@@ -30,20 +44,24 @@ services:
     volumes:
       - redis-queue-data:/data
 
-  # --- Frappe Services ---
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: refractec:latest
-    restart: unless-stopped
-    command: web
-    environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    env_file:
-      - .env
+  # --- One-time configurator (writes site config, then exits) ---
+  configurator:
+    <<: *image
+    restart: on-failure
+    entrypoint:
+      - bash
+      - -c
+    command:
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host mariadb;
+        bench set-config -gp db_port 3306;
+        bench set-config -g redis_cache "redis://redis-cache:6379";
+        bench set-config -g redis_queue "redis://redis-queue:6379";
+        bench set-config -g redis_socketio "redis://redis-queue:6379";
+        bench set-config -gp socketio_port 9000;
     volumes:
-      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
+      - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     depends_on:
       mariadb:
@@ -53,94 +71,86 @@ services:
       redis-queue:
         condition: service_started
 
-  socketio:
-    image: refractec:latest
-    restart: unless-stopped
-    command: socketio
-    environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    env_file:
-      - .env
-    volumes:
-      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
-      - logs:/home/frappe/frappe-bench/logs
-    depends_on:
-      - backend
+  # --- Frappe Backend (Gunicorn) ---
+  backend:
+    <<: *backend_defaults
 
-  worker-default:
-    image: refractec:latest
-    restart: unless-stopped
-    command: worker-default
+  # --- Nginx Frontend (serves assets + reverse proxy) ---
+  frontend:
+    <<: *image
+    command:
+      - nginx-entrypoint.sh
     environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    env_file:
-      - .env
+      BACKEND: backend:8000
+      SOCKETIO: websocket:9000
+      FRAPPE_SITE_NAME_HEADER: ${FRAPPE_SITE_NAME_HEADER:-$$host}
+      PROXY_READ_TIMEOUT: ${PROXY_READ_TIMEOUT:-120}
+      CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-50m}
     volumes:
-      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
-      - logs:/home/frappe/frappe-bench/logs
-    depends_on:
-      - backend
-
-  worker-short:
-    image: refractec:latest
-    restart: unless-stopped
-    command: worker-short
-    environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    env_file:
-      - .env
-    volumes:
-      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
-      - logs:/home/frappe/frappe-bench/logs
-    depends_on:
-      - backend
-
-  worker-long:
-    image: refractec:latest
-    restart: unless-stopped
-    command: worker-long
-    environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    env_file:
-      - .env
-    volumes:
-      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
-      - logs:/home/frappe/frappe-bench/logs
-    depends_on:
-      - backend
-
-  scheduler:
-    image: refractec:latest
-    restart: unless-stopped
-    command: scheduler
-    environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    env_file:
-      - .env
-    volumes:
-      - site-data:/home/frappe/frappe-bench/sites/${FRAPPE_SITE}
-      - logs:/home/frappe/frappe-bench/logs
-    depends_on:
-      - backend
-
-  # --- Reverse Proxy ---
-  nginx:
-    image: nginx:1.27-alpine
-    restart: unless-stopped
+      - sites:/home/frappe/frappe-bench/sites
     ports:
-      - "${HTTP_PORT:-8080}:80"
-    environment:
-      - FRAPPE_SITE=${FRAPPE_SITE:-refractec.site}
-    volumes:
-      - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - logs:/var/log/nginx
+      - "${HTTP_PORT:-8080}:8080"
     depends_on:
       - backend
-      - socketio
+      - websocket
+
+  # --- Socket.IO ---
+  websocket:
+    <<: [*depends_on_configurator, *image]
+    command:
+      - node
+      - /home/frappe/frappe-bench/apps/frappe/socketio.js
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+
+  # --- Background Workers ---
+  queue-short:
+    <<: *backend_defaults
+    command: bench worker --queue short,default
+
+  queue-long:
+    <<: *backend_defaults
+    command: bench worker --queue long,default,short
+
+  # --- Scheduler ---
+  scheduler:
+    <<: *backend_defaults
+    command: bench schedule
+
+  # --- Site Creator (one-time, creates site if not exists) ---
+  create-site:
+    <<: *image
+    restart: "no"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    entrypoint:
+      - bash
+      - -c
+    command:
+      - >
+        wait-for-it -t 60 mariadb:3306;
+        if [ ! -f "sites/${FRAPPE_SITE:-refractec.site}/site_config.json" ]; then
+          echo "Creating site ${FRAPPE_SITE:-refractec.site}...";
+          bench new-site ${FRAPPE_SITE:-refractec.site}
+            --db-host mariadb
+            --db-root-password ${DB_PASSWORD:-changeme}
+            --admin-password ${ADMIN_PASSWORD:-admin}
+            --mariadb-root-username root
+            --mariadb-user-host-login-scope='%'
+            --install-app refractec;
+          echo "Site created.";
+        else
+          echo "Site already exists, running migrate...";
+          bench --site ${FRAPPE_SITE:-refractec.site} migrate;
+        fi
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
 
 volumes:
   mariadb-data:
-  redis-cache-data:
   redis-queue-data:
-  site-data:
+  sites:
   logs:
