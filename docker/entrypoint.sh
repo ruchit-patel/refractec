@@ -19,6 +19,9 @@ mkdir -p "$BENCH_DIR/logs" "/home/frappe/logs"
 
 # ---- Write common_site_config.json from env vars ----
 configure_common_site() {
+  # Frappe needs currentsite.txt to resolve the site
+  echo "$FRAPPE_SITE" > sites/currentsite.txt
+
   cat > sites/common_site_config.json <<EOF
 {
   "db_host": "${DB_HOST:-mariadb}",
