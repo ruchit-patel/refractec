@@ -133,16 +133,9 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 60 mariadb:3306;
         if [ ! -f "sites/${FRAPPE_SITE:-refractec.site}/site_config.json" ]; then
           echo "Creating site ${FRAPPE_SITE:-refractec.site}...";
-          bench new-site ${FRAPPE_SITE:-refractec.site}
-            --db-host mariadb
-            --db-root-password ${DB_PASSWORD:-changeme}
-            --admin-password ${ADMIN_PASSWORD:-admin}
-            --mariadb-root-username root
-            --mariadb-user-host-login-scope='%'
-            --install-app refractec;
+          bench new-site ${FRAPPE_SITE:-refractec.site} --db-host mariadb --db-root-password ${DB_PASSWORD:-changeme} --admin-password ${ADMIN_PASSWORD:-admin} --mariadb-root-username root --mariadb-user-host-login-scope='%' --force --install-app refractec;
           echo "Site created.";
         else
           echo "Site already exists, running migrate...";
