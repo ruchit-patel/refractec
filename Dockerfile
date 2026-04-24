@@ -96,6 +96,9 @@ RUN mkdir -p logs config
 # Generate default configs (will be overridden by entrypoint)
 RUN node -e "console.log('{}')" > sites/common_site_config.json
 
+# Set SITES_PATH globally — Frappe reads this at module import time
+ENV SITES_PATH=/home/frappe/frappe-bench/sites
+
 EXPOSE 8000 9000
 
 # Entrypoint runs as root to fix volume permissions, then drops to frappe

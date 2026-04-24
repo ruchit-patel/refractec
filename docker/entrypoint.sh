@@ -12,9 +12,10 @@ BENCH_DIR="/home/frappe/frappe-bench"
 cd "$BENCH_DIR"
 
 # Fix ownership on volume-mounted directories (created as root by Docker)
+mkdir -p "$BENCH_DIR/sites/${FRAPPE_SITE}/logs" "$BENCH_DIR/logs" /home/frappe/logs
 chown -R frappe:frappe "$BENCH_DIR/sites/${FRAPPE_SITE}" 2>/dev/null || true
 chown -R frappe:frappe "$BENCH_DIR/logs" 2>/dev/null || true
-mkdir -p /home/frappe/logs && chown frappe:frappe /home/frappe/logs
+chown frappe:frappe /home/frappe/logs
 
 # ---------------------------------------------------------------------------
 # Everything below runs as frappe
@@ -89,7 +90,6 @@ case "$1" in
     echo "Starting Gunicorn on port 8000..."
     exec gosu frappe env \
       PATH="$BENCH_DIR/env/bin:$PATH" \
-      SITES_PATH="$BENCH_DIR/sites" \
       gunicorn \
         --bind 0.0.0.0:8000 \
         --workers "${GUNICORN_WORKERS:-4}" \
