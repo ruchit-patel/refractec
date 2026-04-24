@@ -62,7 +62,8 @@ maybe_create_site() {
       --db-root-password "${MYSQL_ROOT_PASSWORD}" \
       --admin-password "${ADMIN_PASSWORD:-admin}" \
       --mariadb-root-username root \
-      --no-mariadb-socket \
+      --mariadb-user-host-login-scope='%' \
+      --force \
       --install-app refractec
     echo "Site created successfully."
   else
