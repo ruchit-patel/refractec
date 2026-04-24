@@ -14,6 +14,9 @@ cd "$BENCH_DIR"
 # Activate the bench virtualenv so gunicorn/frappe are on PATH
 export PATH="$BENCH_DIR/env/bin:$PATH"
 
+# Ensure log directories exist (Frappe writes logs to ~/logs and bench/logs)
+mkdir -p "$BENCH_DIR/logs" "/home/frappe/logs"
+
 # ---- Write common_site_config.json from env vars ----
 configure_common_site() {
   cat > sites/common_site_config.json <<EOF
