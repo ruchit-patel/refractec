@@ -1,4 +1,7 @@
 x-image: &image
+  build:
+    context: .
+    dockerfile: Dockerfile
   image: refractec:latest
   restart: unless-stopped
 
